@@ -73,7 +73,7 @@ export default function AdminPortal() {
     try {
       const nameHash = computeKeccak256(issuerOrgName.trim());
       const receipt = await registerIssuer(signer, newIssuerAddr.trim(), nameHash);
-      setRegSuccess(`University registered successfully! Tx: ${receipt.hash}`);
+      setRegSuccess(`Organization / Institution registered successfully! Tx: ${receipt.hash}`);
       setNewIssuerAddr('');
       setIssuerOrgName('');
     } catch (err) {
@@ -92,7 +92,7 @@ export default function AdminPortal() {
       return;
     }
     if (!targetIssuerAddr) {
-      setActionError('Please provide target university address.');
+      setActionError('Please provide target organization address.');
       return;
     }
 
@@ -182,7 +182,7 @@ export default function AdminPortal() {
           <Shield size={48} color="var(--primary)" style={{ margin: '0 auto 16px' }} />
           <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: 12 }}>Governance Administration</h2>
           <p style={{ color: 'var(--text-sub)', marginBottom: 24 }}>
-            Connect the authorized protocol admin wallet to manage trusted institutions and governance keys.
+            Connect the authorized protocol admin wallet to manage accredited institutions and governance keys.
           </p>
           <button onClick={connectWallet} className="btn btn-primary" style={{ padding: '12px 28px', fontSize: '1rem' }}>
             Connect Admin Wallet
@@ -198,7 +198,7 @@ export default function AdminPortal() {
       <div style={{ marginBottom: 28 }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>Protocol Governance & Administration</h1>
         <p style={{ color: 'var(--text-sub)', fontSize: '0.95rem' }}>
-          Manage trusted universities, accreditation statuses, and execute secure two-step admin transfers.
+          Manage accredited organizations, authorization statuses, and execute secure two-step admin transfers.
         </p>
       </div>
 
@@ -231,14 +231,14 @@ export default function AdminPortal() {
         <div className="glass-card" style={{ padding: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
             <UserPlus size={22} color="var(--primary)" />
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Register University Issuer</h2>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Register Accredited Issuer</h2>
           </div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', marginBottom: 16 }}>
-            Accredits an academic institution to issue verifiable on-chain diplomas and transcripts.
+            Accredits an authorized organization or institution to issue verifiable on-chain credentials.
           </p>
           <form onSubmit={handleRegisterIssuer}>
             <div className="input-group">
-              <label className="input-label">University Public Address (0x...)</label>
+              <label className="input-label">Issuer Public Address (0x...)</label>
               <input
                 type="text"
                 placeholder="0x..."
@@ -249,10 +249,10 @@ export default function AdminPortal() {
               />
             </div>
             <div className="input-group">
-              <label className="input-label">Institution Name</label>
+              <label className="input-label">Organization / Institution Name</label>
               <input
                 type="text"
-                placeholder="e.g. Stanford University"
+                placeholder="e.g. Stanford University or Linux Foundation"
                 value={issuerOrgName}
                 onChange={(e) => setIssuerOrgName(e.target.value)}
                 className="input-field"
@@ -288,10 +288,10 @@ export default function AdminPortal() {
             <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Issuer Status Control</h2>
           </div>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-sub)', marginBottom: 16 }}>
-            Temporarily freeze or restore an institution's issuing privileges in case of audit or security review.
+            Temporarily freeze or restore an organization's issuing privileges in case of audit or security review.
           </p>
           <div className="input-group">
-            <label className="input-label">Target University Address (0x...)</label>
+            <label className="input-label">Target Issuer Address (0x...)</label>
             <input
               type="text"
               placeholder="0x..."

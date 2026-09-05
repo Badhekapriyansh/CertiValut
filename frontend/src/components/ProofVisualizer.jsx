@@ -8,12 +8,12 @@ export default function ProofVisualizer({ activeStep = 4, compact = false }) {
     {
       id: 1,
       name: 'Off-Chain Record',
-      subtitle: 'Student PII & Grades',
+      subtitle: 'Recipient PII & Details',
       tag: 'OFF-CHAIN PRIVACY',
       tagColor: 'var(--text-sub)',
       icon: FileText,
       color: '#38bdf8',
-      desc: 'Official diploma PDF or university academic record. Stored locally by the student and university. Zero personal data touches the public blockchain.',
+      desc: 'Official credential document, certificate, or organization record. Stored locally by the recipient and issuing authority. Zero personal data touches the public blockchain.',
       techSpec: 'PDF / JSON / X.509',
     },
     {
@@ -35,7 +35,7 @@ export default function ProofVisualizer({ activeStep = 4, compact = false }) {
       tagColor: '#ec4899',
       icon: Lock,
       color: '#f472b6',
-      desc: 'Blinds the student identity with a unique salt commitment. Prevents on-chain correlation of student records across institutions.',
+      desc: 'Blinds the recipient identity with a unique salt commitment. Prevents on-chain correlation of credential records across organizations.',
       techSpec: 'keccak256(Secret || Salt)',
     },
     {
@@ -57,7 +57,7 @@ export default function ProofVisualizer({ activeStep = 4, compact = false }) {
       tagColor: 'var(--success)',
       icon: ShieldCheck,
       color: 'var(--success)',
-      desc: 'Employers, background check firms, and universities verify credentials instantaneously with 0 gas and no wallet connection required.',
+      desc: 'Employers, verifiers, and third parties verify credentials instantaneously with 0 gas and no wallet connection required.',
       techSpec: 'Dual-Key Lookup',
     },
   ];

@@ -84,10 +84,10 @@ export default function RevokeView() {
           </span>
         </div>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-display)', marginBottom: 4 }}>
-          Revoke Academic Credential
+          Revoke Credential
         </h1>
         <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem' }}>
-          Permanently invalidate an issued diploma or degree on Arbitrum Stylus registry.
+          Permanently invalidate an issued credential or certification on the Arbitrum Stylus registry.
         </p>
       </div>
 
@@ -101,11 +101,12 @@ export default function RevokeView() {
                 onChange={(e) => setTargetCredId(e.target.value)}
                 value={targetCredId}
                 className="input-field"
+                style={{ background: '#0a0e17', color: '#ffffff' }}
               >
                 <option value="">-- Choose from active credentials --</option>
                 {activeCredentials.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.studentName} — {c.degree} ({c.institution.split(' ')[0]})
+                    {c.recipientName || c.studentName} — {c.title || c.degree} ({(c.organization || c.institution || '').split(' ')[0]})
                   </option>
                 ))}
               </select>
@@ -130,11 +131,13 @@ export default function RevokeView() {
               value={revocationReason}
               onChange={(e) => setRevocationReason(e.target.value)}
               className="input-field"
+              style={{ background: '#0a0e17', color: '#ffffff' }}
             >
-              <option value="Administrative Reissuance">Administrative Reissuance (Updated Curriculum / Grade Correction)</option>
-              <option value="Academic Integrity Audit">Academic Integrity Audit / Plagiarism Determination</option>
-              <option value="Institutional Disciplinary Action">Institutional Disciplinary Action</option>
+              <option value="Administrative Reissuance">Administrative Reissuance (Updated Details / Correction)</option>
+              <option value="Credential Expiration / Non-renewal">Credential Expiration / Non-renewal</option>
+              <option value="Integrity & Compliance Audit">Integrity & Compliance Audit</option>
               <option value="Erroneous Minting">Erroneous Minting (Clerical Data Entry Error)</option>
+              <option value="Institutional Disciplinary Action">Institutional Disciplinary Action</option>
             </select>
           </div>
 
@@ -161,7 +164,7 @@ export default function RevokeView() {
               onChange={(e) => setConfirmedRisk(e.target.checked)}
               style={{ width: 16, height: 16, accentColor: 'var(--danger)' }}
             />
-            <span>I confirm that I am authorized to revoke this academic record on Arbitrum.</span>
+            <span>I confirm that I am authorized to revoke this credential record on Arbitrum Stylus.</span>
           </label>
 
           <button

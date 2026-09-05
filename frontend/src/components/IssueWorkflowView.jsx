@@ -25,7 +25,8 @@ import {
   EyeOff,
   Copy,
   ExternalLink,
-  Upload
+  Upload,
+  Award
 } from 'lucide-react';
 import PrivacyBanner from './PrivacyBanner';
 
@@ -36,15 +37,16 @@ export default function IssueWorkflowView() {
   const [currentStep, setCurrentStep] = useState(1);
 
   // Form Fields (Step 1)
-  const [studentName, setStudentName] = useState('Alexander Vance');
-  const [studentId, setStudentId] = useState('MIT-CS-2026-904');
-  const [degree, setDegree] = useState('Master of Science in Artificial Intelligence & Blockchain Systems');
-  const [institution, setInstitution] = useState('Massachusetts Institute of Technology (MIT)');
-  const [graduationYear, setGraduationYear] = useState('2026');
-  const [honors, setHonors] = useState('First Class Distinction');
+  const [recipientName, setRecipientName] = useState('Alexander Vance');
+  const [recipientId, setRecipientId] = useState('REC-2026-904');
+  const [credentialType, setCredentialType] = useState('Certificate');
+  const [credentialTitle, setCredentialTitle] = useState('Certified Blockchain Solutions Architect');
+  const [organization, setOrganization] = useState('Arbitrum Developer Guild');
+  const [issueDate, setIssueDate] = useState('2026-06-15');
+  const [description, setDescription] = useState('Completed advanced smart contract security and decentralized credential verification curriculum with distinction.');
 
   // Cryptographic Secrets & Hashes (Step 2)
-  const [studentSecret, setStudentSecret] = useState('zk-student-secret-salt-8819');
+  const [recipientSecret, setRecipientSecret] = useState('zk-recipient-secret-salt-8819');
   const [computedCredId, setComputedCredId] = useState('');
   const [computedHolderCommitment, setComputedHolderCommitment] = useState('');
   const [computedHash, setComputedHash] = useState('');
@@ -56,14 +58,14 @@ export default function IssueWorkflowView() {
 
   // Auto Generate Hashes on Transition to Step 2
   const handleProceedToStep2 = () => {
-    if (!studentName || !degree || !institution) {
-      alert('Please fill out all required academic fields.');
+    if (!recipientName || !credentialTitle || !organization) {
+      alert('Please fill out all required credential fields.');
       return;
     }
 
-    const credId = generateCredentialId(institution, studentId, degree, graduationYear);
-    const holderCommit = generateHolderCommitment(studentSecret, 'certivault-v1');
-    const docPayload = `${institution}|${studentId}|${degree}|${graduationYear}|${honors}`;
+    const credId = generateCredentialId(organization, recipientId, credentialTitle, issueDate);
+    const holderCommit = generateHolderCommitment(recipientSecret, 'certivault-v1');
+    const docPayload = `${organization}|${recipientId}|${credentialType}|${credentialTitle}|${issueDate}|${description}`;
     const hash = computeSha256(docPayload);
 
     setComputedCredId(credId);
@@ -78,23 +80,31 @@ export default function IssueWorkflowView() {
     setIsIssuing(true);
 
     try {
+      const issuedTimestamp = issueDate ? Math.floor(new Date(issueDate).getTime() / 1000) : Math.floor(Date.now() / 1000);
+
       if (isDemoMode) {
         // Fast instant simulator
         await new Promise((r) => setTimeout(r, 1200));
 
         const newRecord = {
           id: computedCredId,
-          studentName,
-          studentId,
-          degree,
-          institution,
+          title: credentialTitle,
+          degree: credentialTitle,
+          credentialType,
+          recipientName,
+          studentName: recipientName,
+          recipientId,
+          studentId: recipientId,
+          organization,
+          institution: organization,
           issuerAddress: account || '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
-          issuerName: institution,
-          issuedAt: Math.floor(Date.now() / 1000),
+          issuerName: organization,
+          issuedAt: issuedTimestamp,
+          issueDate,
           revocationAt: 0,
           status: 1, // Active
-          gpa: '4.0 / 4.0',
-          honors,
+          description,
+          honors: description,
           holderCommitment: computedHolderCommitment,
           credentialHash: computedHash,
           txHash: '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
@@ -111,7 +121,7 @@ export default function IssueWorkflowView() {
       } else {
         // Live On-Chain
         if (!signer || !isCorrectNetwork) {
-          throw new Error('Please connect your authorized wallet on Arbitrum Sepolia.');
+          throw new Error('Please connect your authorized issuer wallet on Arbitrum Sepolia.');
         }
         if (!IS_CONTRACT_CONFIGURED) {
           throw new Error('Contract address not set in .env. Switch to Demo Mode above to test.');
@@ -121,16 +131,23 @@ export default function IssueWorkflowView() {
 
         const newRecord = {
           id: computedCredId,
-          studentName,
-          studentId,
-          degree,
-          institution,
+          title: credentialTitle,
+          degree: credentialTitle,
+          credentialType,
+          recipientName,
+          studentName: recipientName,
+          recipientId,
+          studentId: recipientId,
+          organization,
+          institution: organization,
           issuerAddress: account,
-          issuerName: institution,
-          issuedAt: Math.floor(Date.now() / 1000),
+          issuerName: organization,
+          issuedAt: issuedTimestamp,
+          issueDate,
           revocationAt: 0,
           status: 1,
-          honors,
+          description,
+          honors: description,
           holderCommitment: computedHolderCommitment,
           credentialHash: computedHash,
           txHash: receipt.hash,
@@ -236,39 +253,65 @@ export default function IssueWorkflowView() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 20 }}>
             <FileText size={22} color="var(--primary)" />
             <h2 style={{ fontSize: '1.3rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>
-              Step 1 — Academic Credential Information
+              Step 1 — Credential Information
             </h2>
           </div>
 
-          <div className="input-group">
-            <label className="input-label"><Building size={14} /> Issuing University / Institution</label>
-            <input
-              type="text"
-              value={institution}
-              onChange={(e) => setInstitution(e.target.value)}
-              className="input-field"
-              required
-            />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+            <div className="input-group">
+              <label className="input-label"><Building size={14} /> Issuing Organization / Institution</label>
+              <input
+                type="text"
+                value={organization}
+                onChange={(e) => setOrganization(e.target.value)}
+                placeholder="e.g. Arbitrum Foundation, MIT, Google, Stanford"
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label"><Award size={14} /> Credential Type</label>
+              <select
+                value={credentialType}
+                onChange={(e) => setCredentialType(e.target.value)}
+                className="input-field"
+                style={{ background: '#0a0e17', color: '#ffffff' }}
+              >
+                <option value="Certificate">Certificate</option>
+                <option value="Degree">Degree</option>
+                <option value="Course">Course</option>
+                <option value="Internship">Internship</option>
+                <option value="Training">Training</option>
+                <option value="Workshop">Workshop</option>
+                <option value="Skill">Skill</option>
+                <option value="Award">Award</option>
+                <option value="License">License</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             <div className="input-group">
-              <label className="input-label"><User size={14} /> Student Full Name</label>
+              <label className="input-label"><User size={14} /> Recipient Full Name</label>
               <input
                 type="text"
-                value={studentName}
-                onChange={(e) => setStudentName(e.target.value)}
+                value={recipientName}
+                onChange={(e) => setRecipientName(e.target.value)}
+                placeholder="e.g. Alexander Vance"
                 className="input-field"
                 required
               />
             </div>
 
             <div className="input-group">
-              <label className="input-label"><FileText size={14} /> Student Matriculation / ID</label>
+              <label className="input-label"><FileText size={14} /> Recipient ID / Reference ID</label>
               <input
                 type="text"
-                value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
+                value={recipientId}
+                onChange={(e) => setRecipientId(e.target.value)}
+                placeholder="e.g. REC-2026-904"
                 className="input-field"
                 required
               />
@@ -276,11 +319,12 @@ export default function IssueWorkflowView() {
           </div>
 
           <div className="input-group">
-            <label className="input-label"><ShieldCheck size={14} /> Degree / Qualification Awarded</label>
+            <label className="input-label"><ShieldCheck size={14} /> Credential / Achievement Title</label>
             <input
               type="text"
-              value={degree}
-              onChange={(e) => setDegree(e.target.value)}
+              value={credentialTitle}
+              onChange={(e) => setCredentialTitle(e.target.value)}
+              placeholder="e.g. Certified Blockchain Solutions Architect, M.S. Computer Science"
               className="input-field"
               required
             />
@@ -288,22 +332,24 @@ export default function IssueWorkflowView() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }}>
             <div className="input-group">
-              <label className="input-label"><Calendar size={14} /> Graduation Year</label>
+              <label className="input-label"><Calendar size={14} /> Issue Date</label>
               <input
-                type="text"
-                value={graduationYear}
-                onChange={(e) => setGraduationYear(e.target.value)}
+                type="date"
+                value={issueDate}
+                onChange={(e) => setIssueDate(e.target.value)}
                 className="input-field"
+                style={{ background: '#0a0e17', color: '#ffffff' }}
                 required
               />
             </div>
 
             <div className="input-group">
-              <label className="input-label"><Sparkles size={14} /> Honors / Distinction</label>
+              <label className="input-label"><Sparkles size={14} /> Description / Details</label>
               <input
                 type="text"
-                value={honors}
-                onChange={(e) => setHonors(e.target.value)}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="e.g. Completed advanced curriculum with First Class distinction"
                 className="input-field"
               />
             </div>
@@ -332,16 +378,16 @@ export default function IssueWorkflowView() {
           </div>
 
           <p style={{ color: 'var(--text-sub)', fontSize: '0.88rem', marginBottom: 20 }}>
-            Mathematical hashes computed client-side to blind student PII and bind the diploma to Arbitrum Stylus.
+            Mathematical hashes computed client-side to blind recipient PII and bind the credential to Arbitrum Stylus.
           </p>
 
           <div className="input-group">
-            <label className="input-label"><Lock size={14} /> Student Secret Salt (Blinds Identity for ZKP)</label>
+            <label className="input-label"><Lock size={14} /> Recipient Secret Salt (Blinds Identity for ZKP)</label>
             <input
               type="text"
-              value={studentSecret}
+              value={recipientSecret}
               onChange={(e) => {
-                setStudentSecret(e.target.value);
+                setRecipientSecret(e.target.value);
                 setComputedHolderCommitment(generateHolderCommitment(e.target.value, 'certivault-v1'));
               }}
               className="input-field"
@@ -403,10 +449,11 @@ export default function IssueWorkflowView() {
                 <EyeOff size={15} /> KEPT OFF-CHAIN (100% PRIVATE)
               </div>
               <ul style={{ fontSize: '0.82rem', color: 'var(--text-main)', lineHeight: 1.8, paddingLeft: 18 }}>
-                <li>Student Name: <strong>{studentName}</strong></li>
-                <li>Student ID: <strong>{studentId}</strong></li>
-                <li>Full Academic Transcript</li>
-                <li>Student Secret Salt</li>
+                <li>Recipient Name: <strong>{recipientName}</strong></li>
+                <li>Recipient Reference ID: <strong>{recipientId}</strong></li>
+                <li>Credential Type: <strong>{credentialType}</strong></li>
+                <li>Credential Details & Description</li>
+                <li>Recipient Secret Salt</li>
               </ul>
             </div>
 

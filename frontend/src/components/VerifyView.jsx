@@ -137,7 +137,7 @@ export default function VerifyView() {
           bg: 'rgba(0, 255, 135, 0.05)',
           border: 'rgba(0, 255, 135, 0.3)',
           icon: <CheckCircle2 size={44} color="var(--success)" />,
-          description: 'This academic credential has been cryptographically validated against the Arbitrum Stylus immutable ledger. The issuing institution is in good standing and the content is unaltered.',
+          description: 'This credential has been cryptographically validated against the Arbitrum Stylus immutable ledger. The issuing organization is in good standing and the content is unaltered.',
         };
       case 1:
         return {
@@ -152,25 +152,25 @@ export default function VerifyView() {
         };
       case 2:
         return {
-          title: 'ISSUING INSTITUTION NOT ACCREDITED',
+          title: 'ISSUING ORGANIZATION NOT ACCREDITED',
           badgeText: 'UNAUTHORIZED ISSUER',
           badgeClass: 'tech-tag-warning',
           color: 'var(--warning)',
           bg: 'rgba(255, 184, 0, 0.05)',
           border: 'rgba(255, 184, 0, 0.3)',
           icon: <AlertCircle size={44} color="var(--warning)" />,
-          description: 'The entity that minted this record is not an accredited university in the governance trust root.',
+          description: 'The entity that minted this record is not an accredited organization in the governance trust root.',
         };
       case 3:
         return {
-          title: 'ISSUING INSTITUTION SUSPENDED',
+          title: 'ISSUING ORGANIZATION SUSPENDED',
           badgeText: 'ISSUER SUSPENDED',
           badgeClass: 'tech-tag-warning',
           color: 'var(--warning)',
           bg: 'rgba(255, 184, 0, 0.05)',
           border: 'rgba(255, 184, 0, 0.3)',
           icon: <AlertCircle size={44} color="var(--warning)" />,
-          description: 'The issuing university currently has its verification privileges suspended pending administrative review.',
+          description: 'The issuing organization currently has its verification privileges suspended pending administrative review.',
         };
       case 4:
         return {
@@ -181,7 +181,7 @@ export default function VerifyView() {
           bg: 'rgba(255, 71, 87, 0.05)',
           border: 'rgba(255, 71, 87, 0.3)',
           icon: <XCircle size={44} color="var(--danger)" />,
-          description: 'The document or transcript hash provided does not match the immutable cryptographic root stored on Arbitrum Stylus.',
+          description: 'The document or certificate hash provided does not match the immutable cryptographic root stored on Arbitrum Stylus.',
         };
       case 5:
         return {
@@ -192,7 +192,7 @@ export default function VerifyView() {
           bg: 'rgba(255, 71, 87, 0.05)',
           border: 'rgba(255, 71, 87, 0.3)',
           icon: <AlertCircle size={44} color="var(--danger)" />,
-          description: 'This credential was officially revoked by the issuing institution. It is no longer valid for professional or academic standing.',
+          description: 'This credential was officially revoked by the issuing organization. It is no longer valid for official standing.',
         };
       default:
         return {
@@ -214,14 +214,14 @@ export default function VerifyView() {
       <div style={{ textAlign: 'center', marginBottom: 32 }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
           <span className="tech-tag tech-tag-success">
-            <ShieldCheck size={12} /> PUBLIC EMPLOYER & INSTITUTION PORTAL
+            <ShieldCheck size={12} /> PUBLIC VERIFIER & RECIPIENT PORTAL
           </span>
         </div>
         <h1 style={{ fontSize: '2.5rem', fontWeight: 900, fontFamily: 'var(--font-display)', marginBottom: 12 }}>
           Instant Credential Verification
         </h1>
-        <p style={{ color: 'var(--text-sub)', maxWidth: 620, margin: '0 auto', fontSize: '1rem' }}>
-          Verify academic diplomas, professional degrees, and transcripts on Arbitrum Stylus. Zero gas fees, zero wallet connection required.
+        <p style={{ color: 'var(--text-sub)', maxWidth: 640, margin: '0 auto', fontSize: '1rem' }}>
+          Verify degrees, professional certifications, internships, licenses, and achievements on Arbitrum Stylus. Zero gas fees, zero wallet connection required.
         </p>
       </div>
 
@@ -381,46 +381,73 @@ export default function VerifyView() {
               marginBottom: 24
             }}>
               <div style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--primary)', marginBottom: 14, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                // ACADEMIC ATTESTATION RECORD
+                // OFFICIAL ATTESTATION RECORD
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
                 <div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Building size={13} /> ISSUING UNIVERSITY
+                    <Building size={13} /> ISSUING ORGANIZATION
                   </div>
                   <div style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '1rem' }}>
-                    {result.details.institution || 'Accredited Institution'}
+                    {result.details.organization || result.details.institution || result.issuer || 'Accredited Organization'}
                   </div>
                 </div>
 
                 <div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Award size={13} /> DEGREE / QUALIFICATION
+                    <Award size={13} /> CREDENTIAL / ACHIEVEMENT TITLE
                   </div>
                   <div style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '1rem' }}>
-                    {result.details.degree || 'Official Credential'}
+                    {result.details.title || result.details.degree || 'Official Credential'}
                   </div>
+                  {result.details.credentialType && (
+                    <span className="badge badge-blue" style={{ marginTop: 4, display: 'inline-block' }}>
+                      {result.details.credentialType}
+                    </span>
+                  )}
                 </div>
 
                 <div>
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <Clock size={13} /> ISSUED TIMESTAMP
+                    <Clock size={13} /> ISSUE DATE / TIMESTAMP
                   </div>
                   <div style={{ fontSize: '0.9rem', color: 'var(--text-main)' }}>
-                    {result.details.issuedAt > 0
-                      ? new Date(result.details.issuedAt * 1000).toLocaleString()
-                      : 'N/A'}
+                    {result.details.issueDate || (result.details.issuedAt > 0
+                      ? new Date(result.details.issuedAt * 1000).toLocaleDateString()
+                      : 'N/A')}
                   </div>
                 </div>
 
-                {result.details.studentName && (
+                {(result.details.recipientName || result.details.studentName) && (
                   <div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <FileCheck size={13} /> CANDIDATE NAME (VERIFIED MATCH)
+                      <FileCheck size={13} /> RECIPIENT NAME (VERIFIED MATCH)
                     </div>
                     <div style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '1rem' }}>
-                      {result.details.studentName}
+                      {result.details.recipientName || result.details.studentName}
+                    </div>
+                  </div>
+                )}
+
+                {(result.details.recipientId || result.details.studentId) && (
+                  <div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <FileText size={13} /> RECIPIENT ID / REFERENCE
+                    </div>
+                    <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem', fontFamily: 'var(--font-mono)' }}>
+                      {result.details.recipientId || result.details.studentId}
+                    </div>
+                  </div>
+                )}
+
+                {(result.details.description || result.details.honors) && (
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <Sparkles size={13} /> DESCRIPTION & DETAILS
+                    </div>
+                    <div style={{ fontSize: '0.85rem', color: 'var(--text-sub)' }}>
+                      {result.details.description || result.details.honors}
                     </div>
                   </div>
                 )}
@@ -474,7 +501,7 @@ export default function VerifyView() {
                 {result.details?.holderCommitment && (
                   <div>
                     <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginBottom: 4 }}>
-                      ZERO-KNOWLEDGE STUDENT COMMITMENT (SALTED)
+                      ZERO-KNOWLEDGE RECIPIENT COMMITMENT (SALTED)
                     </div>
                     <div className="mono-block">{result.details.holderCommitment}</div>
                   </div>

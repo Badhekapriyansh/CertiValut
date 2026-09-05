@@ -36,14 +36,14 @@ export default function DashboardView() {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
             <span className="tech-tag tech-tag-cyan" style={{ fontSize: '0.68rem' }}>
-              <Building size={11} /> ACCREDITED REGISTRAR PORTAL
+              <Building size={11} /> ISSUER OPERATIONS PORTAL
             </span>
           </div>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-display)', marginBottom: 4 }}>
-            Institutional Operations Center
+            Issuer Operations Center
           </h1>
           <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem' }}>
-            Live credential activity overview, registrar issuance quotas, and audit stream on Arbitrum Stylus.
+            Live credential activity overview, organization issuance telemetry, and audit stream on Arbitrum Stylus.
           </p>
         </div>
 
@@ -80,7 +80,7 @@ export default function DashboardView() {
             {credentials.length}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: 4 }}>
-            Degrees & Attestations on Stylus
+            Credentials on Arbitrum Stylus
           </div>
         </div>
 
@@ -92,7 +92,7 @@ export default function DashboardView() {
             {activeCount}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: 4 }}>
-            Valid & verified credentials
+            Valid & authentic records
           </div>
         </div>
 
@@ -104,19 +104,19 @@ export default function DashboardView() {
             {revokedCount}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: 4 }}>
-            Invalidated by admin
+            Invalidated by issuers
           </div>
         </div>
 
         <div className="glass-card" style={{ padding: '20px 22px' }}>
           <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase', marginBottom: 6 }}>
-            PUBLIC QUERIES
+            PUBLIC VERIFICATIONS
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--primary)', fontFamily: 'var(--font-display)' }}>
             1,428
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)', marginTop: 4 }}>
-            Employer background checks
+            Public authenticity checks
           </div>
         </div>
       </div>
@@ -151,11 +151,16 @@ export default function DashboardView() {
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text-main)' }}>
-                    {cred.studentName}
+                  <div style={{ fontWeight: 600, fontSize: '0.88rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span>{cred.recipientName || cred.studentName}</span>
+                    {cred.credentialType && (
+                      <span className="badge badge-neutral" style={{ fontSize: '0.62rem', padding: '1px 5px' }}>
+                        {cred.credentialType}
+                      </span>
+                    )}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>
-                    {cred.degree}
+                    {cred.title || cred.degree}
                   </div>
                 </div>
 

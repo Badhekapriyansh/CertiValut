@@ -87,7 +87,7 @@ export default function FloatingAssistant() {
               >
                 <ShieldCheck size={13} color="var(--primary)" />
                 <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {cred?.institution ? cred.institution.split(' ')[0] : 'University'} ({cred?.studentName || 'Student'})
+                  {cred?.organization || cred?.institution ? (cred.organization || cred.institution).split(' ')[0] : 'Issuer'} ({cred?.recipientName || cred?.studentName || 'Recipient'})
                 </span>
               </button>
             ))}

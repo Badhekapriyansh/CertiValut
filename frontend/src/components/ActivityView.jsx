@@ -43,7 +43,7 @@ export default function ActivityView() {
           Activity & Transaction Timeline
         </h1>
         <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem' }}>
-          Verifiable stream of credential issuances, revocations, and institutional authorizations on Arbitrum Stylus.
+          Verifiable stream of credential issuances, revocations, and organization authorizations on Arbitrum Stylus.
         </p>
       </div>
 
@@ -94,7 +94,7 @@ export default function ActivityView() {
                             ? 'Credential Issued'
                             : act.type === 'CREDENTIAL_REVOKED'
                             ? 'Credential Revoked'
-                            : 'Institution Accredited'}
+                            : 'Organization Accredited'}
                         </span>
                         {getActionBadge(act.type)}
                       </div>

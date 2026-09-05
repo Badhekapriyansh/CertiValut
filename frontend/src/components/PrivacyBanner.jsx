@@ -27,7 +27,7 @@ export default function PrivacyBanner({ compact = false }) {
             Your Personal Information Never Goes On-Chain
           </h4>
           <p style={{ fontSize: '0.86rem', color: 'var(--text-sub)', lineHeight: 1.4 }}>
-            CertiVault stores only non-invertible 256-bit cryptographic fingerprints. Student names, student IDs, GPA, and transcripts remain 100% off-chain.
+            CertiVault stores only non-invertible 256-bit cryptographic fingerprints. Recipient names, recipient IDs, grades, and credential metadata remain 100% off-chain.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function PrivacyBanner({ compact = false }) {
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: '#94a3b8' }}>
             <FileText size={15} color="#38bdf8" />
-            <span>Academic Document</span>
+            <span>Credential Document</span>
             <span style={{ fontSize: '0.65rem', color: 'var(--success)', background: 'rgba(0,255,135,0.1)', padding: '1px 5px', borderRadius: 4 }}>
               (Off-Chain)
             </span>

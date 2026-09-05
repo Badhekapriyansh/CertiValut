@@ -139,7 +139,7 @@ function MainLayout() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>CertiVault</span>
             <span>—</span>
-            <span>Blockchain-verified academic credentials</span>
+            <span>Blockchain-verified credentials & achievements</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>

@@ -47,7 +47,7 @@ export default function AdminView() {
       if (isDemoMode) {
         await new Promise((r) => setTimeout(r, 800));
         setRegSuccess(`Institution "${issuerOrgName}" successfully accredited in governance registry.`);
-        showToast(`University ${issuerOrgName} accredited`, 'success');
+        showToast(`Organization ${issuerOrgName} accredited`, 'success');
         setNewIssuerAddr('');
         setIssuerOrgName('');
       } else {
@@ -56,8 +56,8 @@ export default function AdminView() {
         }
         const nameHash = computeKeccak256(issuerOrgName.trim());
         const receipt = await registerIssuer(signer, newIssuerAddr.trim(), nameHash);
-        setRegSuccess(`University registered successfully! Tx: ${receipt.hash}`);
-        showToast('University registered on-chain', 'success');
+        setRegSuccess(`Organization / Institution registered successfully! Tx: ${receipt.hash}`);
+        showToast('Organization registered on-chain', 'success');
         setNewIssuerAddr('');
         setIssuerOrgName('');
       }
@@ -73,7 +73,7 @@ export default function AdminView() {
     setActionSuccess(null);
 
     if (!targetIssuerAddr) {
-      setActionError('Please select a target university.');
+      setActionError('Please select a target organization.');
       return;
     }
 
@@ -115,7 +115,7 @@ export default function AdminView() {
           Governance & Accreditation
         </h1>
         <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem' }}>
-          Accredit higher-education institutions, enforce audit suspensions, and manage Stylus contract trust roots.
+          Accredit authorized organizations and institutions, enforce audit suspensions, and manage Stylus contract trust roots.
         </p>
       </div>
 
@@ -142,15 +142,15 @@ export default function AdminView() {
         {/* Accredit Institution */}
         <div className="glass-card" style={{ padding: 24 }}>
           <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#ffffff', fontFamily: 'var(--font-display)', marginBottom: 8 }}>
-            Accredit University Issuer
+            Accredit Organization / Institution
           </h2>
           <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: 16 }}>
-            Authorize an institutional public key to issue cryptographic credentials.
+            Authorize an organizational public key to issue cryptographic verifiable credentials.
           </p>
 
           <form onSubmit={handleRegisterIssuer}>
             <div className="input-group">
-              <label className="input-label">University Public Address (0x...)</label>
+              <label className="input-label">Issuer Public Address (0x...)</label>
               <input
                 type="text"
                 placeholder="0x..."
@@ -162,10 +162,10 @@ export default function AdminView() {
             </div>
 
             <div className="input-group">
-              <label className="input-label">Institution Official Name</label>
+              <label className="input-label">Organization / Institution Official Name</label>
               <input
                 type="text"
-                placeholder="e.g. Stanford University School of Engineering"
+                placeholder="e.g. Stanford University or Linux Foundation"
                 value={issuerOrgName}
                 onChange={(e) => setIssuerOrgName(e.target.value)}
                 className="input-field"
@@ -180,7 +180,7 @@ export default function AdminView() {
               style={{ width: '100%', padding: '10px' }}
             >
               <UserPlus size={15} />
-              <span>{regLoading ? 'Accrediting...' : 'Accredit Institution'}</span>
+              <span>{regLoading ? 'Accrediting...' : 'Accredit Organization'}</span>
             </button>
           </form>
 
@@ -202,17 +202,17 @@ export default function AdminView() {
             Issuer Status Control
           </h2>
           <p style={{ fontSize: '0.84rem', color: 'var(--text-sub)', marginBottom: 16 }}>
-            Temporarily freeze or restore an institution's verification privileges.
+            Temporarily freeze or restore an organization's credential issuing privileges.
           </p>
 
           <div className="input-group">
-            <label className="input-label">Select Accredited Institution</label>
+            <label className="input-label">Select Accredited Organization / Institution</label>
             <select
               onChange={(e) => setTargetIssuerAddr(e.target.value)}
               value={targetIssuerAddr}
               className="input-field"
             >
-              <option value="">-- Choose University --</option>
+              <option value="">-- Choose Organization --</option>
               {issuers.map((iss) => (
                 <option key={iss.address} value={iss.address}>
                   {iss.name} ({iss.address.slice(0, 8)}...)

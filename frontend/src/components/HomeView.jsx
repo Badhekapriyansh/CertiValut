@@ -24,21 +24,21 @@ export default function HomeView() {
   const samplePresets = [
     {
       title: 'Stanford M.S. Distributed Systems',
-      student: 'Elena Rostova',
+      recipient: 'Elena Rostova',
       type: 'Valid / Authentic',
       badge: 'tech-tag-success',
       cred: credentials && credentials[0] ? credentials[0] : null,
     },
     {
-      title: 'MIT B.S. Computer Science & AI',
-      student: 'Marcus Vance',
+      title: 'Google Cloud / Arbitrum Fellow - Systems Engineering',
+      recipient: 'Marcus Vance',
       type: 'Valid / Authentic',
       badge: 'tech-tag-success',
       cred: credentials && credentials[1] ? credentials[1] : null,
     },
     {
-      title: 'Oxford Bachelor of Civil Law',
-      student: 'Sarah Jenkins',
+      title: 'AWS Certified Solutions Architect - Professional',
+      recipient: 'Sarah Jenkins',
       type: 'Revoked Attestation',
       badge: 'tech-tag-danger',
       cred: credentials && credentials[2] ? credentials[2] : null,
@@ -73,8 +73,8 @@ export default function HomeView() {
           letterSpacing: '-1.5px',
           marginBottom: 20
         }}>
-          Institution-Issued <span style={{ color: 'var(--primary)' }}>Verifiable</span> <br />
-          Academic Credentials
+          Organization-Issued <span style={{ color: 'var(--primary)' }}>Verifiable</span> <br />
+          Credentials & Achievements
         </h1>
 
         <p style={{
@@ -84,7 +84,7 @@ export default function HomeView() {
           margin: '0 auto 36px',
           lineHeight: 1.5
         }}>
-          Eliminate credential fraud and slow background checks. Universities issue tamper-proof diplomas directly to Arbitrum Stylus with zero student personal data exposed on-chain.
+          Eliminate credential fraud and slow background checks. Authorized organizations issue tamper-proof verifiable credentials directly to Arbitrum Stylus with zero recipient personal data exposed on-chain.
         </p>
 
         {/* Hero Actions */}
@@ -102,7 +102,7 @@ export default function HomeView() {
             className="btn btn-secondary"
             style={{ padding: '14px 28px', fontSize: '1rem' }}
           >
-            <Building size={18} /> University Dashboard
+            <Building size={18} /> Issuer Operations Center
           </button>
         </div>
 
@@ -147,7 +147,7 @@ export default function HomeView() {
                     {preset.title}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-sub)' }}>
-                    Student: {preset.student}
+                    Recipient: {preset.recipient}
                   </div>
                 </div>
                 <div style={{ fontSize: '0.68rem', color: 'var(--text-mono)', fontFamily: 'var(--font-mono)' }}>
@@ -174,7 +174,7 @@ export default function HomeView() {
               14 Tier-1
             </div>
             <div style={{ fontSize: '0.74rem', color: 'var(--text-sub)', marginTop: 4 }}>
-              Stanford, MIT, Oxford, ETH Zurich +
+              Universities, Labs, Tech Foundations +
             </div>
           </div>
 
@@ -186,7 +186,7 @@ export default function HomeView() {
               5,290+
             </div>
             <div style={{ fontSize: '0.74rem', color: 'var(--text-sub)', marginTop: 4 }}>
-              Degrees, Transcripts & Certificates
+              Certificates, Degrees & Fellowships
             </div>
           </div>
 
@@ -231,7 +231,7 @@ export default function HomeView() {
             ENTERPRISE ARCHITECTURE
           </span>
           <h2 style={{ fontSize: '2rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>
-            Why Arbitrum Stylus for Academic Trust
+            Why Arbitrum Stylus for Verifiable Trust
           </h2>
         </div>
 
@@ -242,7 +242,7 @@ export default function HomeView() {
             </div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8 }}>Rust WASM Efficiency</h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              By compiling memory-safe Rust to WebAssembly on Arbitrum Nitro, Stylus allows issuing batches of thousands of student records at a fraction of standard L2 transaction fees.
+              By compiling memory-safe Rust to WebAssembly on Arbitrum Nitro, Stylus allows issuing batches of thousands of verifiable credentials at a fraction of standard L2 transaction fees.
             </p>
           </div>
 
@@ -252,7 +252,7 @@ export default function HomeView() {
             </div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8 }}>2-Step Governance & Trust Root</h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              Institutions must be accredited by the governance trust-root. Accredited issuers can be audited or temporarily suspended instantly if administrative reviews are triggered.
+              Institutions and organizations must be accredited by the governance trust-root. Accredited issuers can be audited or temporarily suspended instantly if administrative reviews are triggered.
             </p>
           </div>
 
@@ -262,7 +262,7 @@ export default function HomeView() {
             </div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: 8 }}>Cryptographic Revocation</h3>
             <p style={{ color: 'var(--text-sub)', fontSize: '0.9rem', lineHeight: 1.5 }}>
-              Traditional paper diplomas cannot be cancelled once issued. CertiVault allows the issuing university to broadcast an immutable revocation timestamp while maintaining historical audit records.
+              Traditional paper credentials and certificates cannot be cancelled once issued. CertiVault allows the issuing organization to broadcast an immutable revocation timestamp while maintaining historical audit records.
             </p>
           </div>
         </div>

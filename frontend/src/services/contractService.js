@@ -146,12 +146,12 @@ export function computeKeccak256(data) {
   return ethers.keccak256(typeof data === 'string' ? ethers.toUtf8Bytes(data) : data);
 }
 
-export function generateCredentialId(institutionId, studentIdentifier, degreeName, year) {
-  const rawString = `${institutionId.toLowerCase()}:${studentIdentifier.toLowerCase()}:${degreeName.toLowerCase()}:${year}`;
+export function generateCredentialId(issuerId, recipientId, credentialTitle, issueDateOrYear) {
+  const rawString = `${String(issuerId || '').toLowerCase()}:${String(recipientId || '').toLowerCase()}:${String(credentialTitle || '').toLowerCase()}:${String(issueDateOrYear || '')}`;
   return ethers.keccak256(ethers.toUtf8Bytes(rawString));
 }
 
-export function generateHolderCommitment(studentSecret, studentSalt) {
-  const rawString = `${studentSecret}:${studentSalt}`;
+export function generateHolderCommitment(recipientSecret, recipientSalt) {
+  const rawString = `${String(recipientSecret || '')}:${String(recipientSalt || '')}`;
   return ethers.keccak256(ethers.toUtf8Bytes(rawString));
 }

@@ -22,11 +22,19 @@ export default function CredentialsView() {
   const revokedCount = credentials.filter((c) => c.status === 2).length;
 
   const filtered = credentials.filter((c) => {
+    const term = searchTerm.toLowerCase();
+    const recipient = (c.recipientName || c.studentName || '').toLowerCase();
+    const title = (c.title || c.degree || '').toLowerCase();
+    const org = (c.organization || c.institution || '').toLowerCase();
+    const id = (c.id || '').toLowerCase();
+    const type = (c.credentialType || '').toLowerCase();
+
     const matchesSearch =
-      c.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.degree.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.institution.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      c.id.toLowerCase().includes(searchTerm.toLowerCase());
+      recipient.includes(term) ||
+      title.includes(term) ||
+      org.includes(term) ||
+      id.includes(term) ||
+      type.includes(term);
 
     if (statusFilter === 'ACTIVE') return matchesSearch && c.status === 1;
     if (statusFilter === 'REVOKED') return matchesSearch && c.status === 2;
@@ -34,13 +42,13 @@ export default function CredentialsView() {
   });
 
   const handleExportCsv = () => {
-    const headers = 'Credential ID,Recipient,Degree,Institution,Status,Issued Date,Holder Commitment,Hash\n';
+    const headers = 'Credential ID,Recipient,Credential Title,Type,Organization,Status,Issued Date,Holder Commitment,Hash\n';
     const rows = filtered
       .map(
         (c) =>
-          `"${c.id}","${c.studentName}","${c.degree}","${c.institution}","${
+          `"${c.id}","${c.recipientName || c.studentName}","${c.title || c.degree}","${c.credentialType || 'Credential'}","${c.organization || c.institution}","${
             c.status === 1 ? 'Active' : 'Revoked'
-          }","${new Date(c.issuedAt * 1000).toISOString()}","${c.holderCommitment}","${c.credentialHash}"`
+          }","${c.issueDate || new Date(c.issuedAt * 1000).toISOString().split('T')[0]}","${c.holderCommitment}","${c.credentialHash}"`
       )
       .join('\n');
     const blob = new Blob([headers + rows], { type: 'text/csv' });
@@ -70,10 +78,10 @@ export default function CredentialsView() {
             </span>
           </div>
           <h1 style={{ fontSize: '2rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-display)', marginBottom: 4 }}>
-            Academic Credentials Directory
+            Verifiable Credentials Directory
           </h1>
           <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem' }}>
-            Filter, search, and inspect verifiable credentials issued across accredited universities.
+            Filter, search, and inspect verifiable credentials, degrees, certifications, and awards issued on Arbitrum Stylus.
           </p>
         </div>
 
@@ -157,7 +165,7 @@ export default function CredentialsView() {
           <Search size={15} style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             type="text"
-            placeholder="Search by student, degree, or university..."
+            placeholder="Search by recipient, credential title, type, or organization..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="input-field"
@@ -196,9 +204,10 @@ export default function CredentialsView() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>Credential</th>
+                <th>Credential / Achievement</th>
+                <th>Type</th>
                 <th>Recipient</th>
-                <th>Institution</th>
+                <th>Issuing Organization</th>
                 <th>Issued Date</th>
                 <th>Status</th>
                 <th style={{ textAlign: 'right' }}>Action</th>
@@ -212,20 +221,25 @@ export default function CredentialsView() {
                   style={{ cursor: 'pointer' }}
                 >
                   <td>
-                    <div style={{ fontWeight: 600, color: '#ffffff' }}>{cred.degree}</div>
+                    <div style={{ fontWeight: 600, color: '#ffffff' }}>{cred.title || cred.degree}</div>
                     <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                       {cred.id.slice(0, 10)}...{cred.id.slice(-6)}
                     </div>
                   </td>
                   <td>
-                    <div style={{ fontWeight: 500, color: 'var(--text-main)' }}>{cred.studentName}</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{cred.studentId}</div>
+                    <span className="badge badge-blue" style={{ fontSize: '0.72rem' }}>
+                      {cred.credentialType || 'Credential'}
+                    </span>
+                  </td>
+                  <td>
+                    <div style={{ fontWeight: 500, color: 'var(--text-main)' }}>{cred.recipientName || cred.studentName}</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>{cred.recipientId || cred.studentId}</div>
                   </td>
                   <td style={{ fontSize: '0.84rem', color: 'var(--text-sub)' }}>
-                    {cred.institution}
+                    {cred.organization || cred.institution}
                   </td>
                   <td style={{ fontSize: '0.84rem', color: 'var(--text-sub)' }}>
-                    {new Date(cred.issuedAt * 1000).toLocaleDateString()}
+                    {cred.issueDate || (cred.issuedAt > 0 ? new Date(cred.issuedAt * 1000).toLocaleDateString() : 'N/A')}
                   </td>
                   <td>
                     <span className={`badge ${cred.status === 1 ? 'badge-success' : 'badge-danger'}`}>

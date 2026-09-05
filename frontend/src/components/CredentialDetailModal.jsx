@@ -89,12 +89,17 @@ export default function CredentialDetailModal() {
           </div>
 
           <div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#ffffff' }}>
-              {inspectCredential.degree}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span className="badge badge-blue">
+                {inspectCredential.credentialType || 'Credential'}
+              </span>
             </div>
-            <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#ffffff' }}>
+              {inspectCredential.title || inspectCredential.degree}
+            </div>
+            <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
               <Building size={13} color="var(--primary)" />
-              <span>{inspectCredential.institution}</span>
+              <span>{inspectCredential.organization || inspectCredential.institution}</span>
             </div>
           </div>
         </div>
@@ -118,26 +123,28 @@ export default function CredentialDetailModal() {
           marginBottom: 20
         }}>
           <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>STUDENT RECIPIENT</div>
-            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>{inspectCredential.studentName}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>RECIPIENT / HOLDER</div>
+            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>{inspectCredential.recipientName || inspectCredential.studentName}</div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>MATRICULATION ID</div>
-            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>{inspectCredential.studentId}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>RECIPIENT / REFERENCE ID</div>
+            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>{inspectCredential.recipientId || inspectCredential.studentId}</div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>ISSUED DATE</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>ISSUE DATE</div>
             <div style={{ color: 'var(--text-main)', fontSize: '0.88rem' }}>
-              {new Date(inspectCredential.issuedAt * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+              {inspectCredential.issueDate || (inspectCredential.issuedAt > 0
+                ? new Date(inspectCredential.issuedAt * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+                : 'N/A')}
             </div>
           </div>
 
-          {inspectCredential.honors && (
-            <div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>HONORS / DISTINCTION</div>
-              <div style={{ color: 'var(--text-main)', fontSize: '0.88rem' }}>{inspectCredential.honors}</div>
+          {(inspectCredential.description || inspectCredential.honors) && (
+            <div style={{ gridColumn: '1 / -1' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>DESCRIPTION / DETAILS</div>
+              <div style={{ color: 'var(--text-main)', fontSize: '0.88rem' }}>{inspectCredential.description || inspectCredential.honors}</div>
             </div>
           )}
         </div>

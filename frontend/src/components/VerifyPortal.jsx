@@ -136,10 +136,10 @@ export default function VerifyPortal() {
           Zero-Gas Public Verification
         </div>
         <h1 style={{ fontSize: '2.4rem', fontWeight: 800, marginBottom: 12 }}>
-          Instant Academic Verification
+          Instant Credential Verification
         </h1>
         <p style={{ color: 'var(--text-sub)', maxWidth: 540, margin: '0 auto', fontSize: '1rem' }}>
-          Employers and institutions can verify diplomas, transcripts, and certificates directly on Arbitrum Stylus without connecting a wallet.
+          Employers and organizations can verify degrees, certificates, internships, and achievement credentials directly on Arbitrum Stylus without connecting a wallet.
         </p>
       </div>
 

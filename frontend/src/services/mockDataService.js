@@ -1,20 +1,26 @@
 import { ethers } from 'ethers';
 
-// Initial pre-loaded verifiable credentials for competition judge testing
+// Initial pre-loaded verifiable credentials for judge testing and general verification
 const DEFAULT_MOCK_CREDENTIALS = [
   {
     id: '0x8f14b62d3a985e78326a0b47124976cf0e817926b485671d15c1e289bf44901a',
-    studentName: 'Elena Rostova',
-    studentId: 'ST-2026-9901',
+    title: 'Master of Science in Distributed Systems & Cryptography',
     degree: 'Master of Science in Distributed Systems & Cryptography',
+    credentialType: 'Degree',
+    recipientName: 'Elena Rostova',
+    studentName: 'Elena Rostova',
+    recipientId: 'REC-STANFORD-9901',
+    studentId: 'REC-STANFORD-9901',
+    organization: 'Stanford University School of Engineering',
     institution: 'Stanford University School of Engineering',
     issuerAddress: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
-    issuerName: 'Stanford Engineering Registrar',
+    issuerName: 'Stanford University School of Engineering',
     issuedAt: Math.floor(Date.now() / 1000) - 86400 * 42,
+    issueDate: '2026-05-18',
     revocationAt: 0,
-    status: 1, // Active
-    gpa: '3.94 / 4.0',
-    honors: 'Summa Cum Laude',
+    status: 1, // Active / Authentic
+    description: 'Summa Cum Laude with Specialization in Zero-Knowledge Cryptography & Distributed Consensus.',
+    honors: 'Summa Cum Laude with Specialization in Zero-Knowledge Cryptography & Distributed Consensus.',
     holderCommitment: '0x3a4b9c1d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2a1b',
     credentialHash: '0x5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d',
     txHash: '0x3c7e9a1b5d2f8e4a6c0b9d7e1f3a5c7e9b2d4f6a8c0e2b4d6f8a0c2e4b6d8f0a',
@@ -23,17 +29,23 @@ const DEFAULT_MOCK_CREDENTIALS = [
   },
   {
     id: '0x4d2e8a7b1c9f0e3d5a6b8c7e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a',
+    title: 'Arbitrum Stylus Advanced Rust Developer Certification',
+    degree: 'Arbitrum Stylus Advanced Rust Developer Certification',
+    credentialType: 'Certificate',
+    recipientName: 'Marcus Vance',
     studentName: 'Marcus Vance',
-    studentId: 'MIT-EECS-8820',
-    degree: 'Bachelor of Science in Computer Science & AI',
-    institution: 'Massachusetts Institute of Technology (MIT)',
+    recipientId: 'ARB-CERT-8820',
+    studentId: 'ARB-CERT-8820',
+    organization: 'Offchain Labs Developer Academy',
+    institution: 'Offchain Labs Developer Academy',
     issuerAddress: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
-    issuerName: 'MIT EECS Department',
+    issuerName: 'Offchain Labs Developer Academy',
     issuedAt: Math.floor(Date.now() / 1000) - 86400 * 120,
+    issueDate: '2026-04-12',
     revocationAt: 0,
-    status: 1, // Active
-    gpa: '4.0 / 4.0',
-    honors: 'Departmental Distinction',
+    status: 1, // Active / Authentic
+    description: 'Validated mastery in memory-safe Stylus smart contracts, ArbWasm precompile invocation, and L2 gas optimization.',
+    honors: 'Validated mastery in memory-safe Stylus smart contracts, ArbWasm precompile invocation, and L2 gas optimization.',
     holderCommitment: '0x1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c',
     credentialHash: '0x8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b',
     txHash: '0x7e9a1b3c5d2f8e4a6c0b9d7e1f3a5c7e9b2d4f6a8c0e2b4d6f8a0c2e4b6d8f0b',
@@ -41,18 +53,49 @@ const DEFAULT_MOCK_CREDENTIALS = [
     gasUsed: '23,904 gas (Stylus WASM)',
   },
   {
+    id: '0x3b1e9a2c4d5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b',
+    title: 'Ethereum Core Protocol & L2 Rollup Fellowship',
+    degree: 'Ethereum Core Protocol & L2 Rollup Fellowship',
+    credentialType: 'Internship',
+    recipientName: 'Aaliyah Chen',
+    studentName: 'Aaliyah Chen',
+    recipientId: 'ETH-FELLOW-2026',
+    studentId: 'ETH-FELLOW-2026',
+    organization: 'Ethereum Foundation',
+    institution: 'Ethereum Foundation',
+    issuerAddress: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
+    issuerName: 'Ethereum Foundation',
+    issuedAt: Math.floor(Date.now() / 1000) - 86400 * 75,
+    issueDate: '2026-03-01',
+    revocationAt: 0,
+    status: 1, // Active / Authentic
+    description: '3-Month Intensive Core Engineering Fellowship focusing on decentralized sequencers and state fraud proofs.',
+    honors: '3-Month Intensive Core Engineering Fellowship focusing on decentralized sequencers and state fraud proofs.',
+    holderCommitment: '0x2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d',
+    credentialHash: '0x7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8c',
+    txHash: '0x6c0b9d7e1f3a5c7e9b2d4f6a8c0e2b4d6f8a0c2e4b6d8f0b3c5d2f8e4a7e9a1b',
+    blockNumber: 14682019,
+    gasUsed: '24,050 gas (Stylus WASM)',
+  },
+  {
     id: '0x7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8b',
+    title: 'Oxford Jurisprudence & Legal Innovation Prize',
+    degree: 'Oxford Jurisprudence & Legal Innovation Prize',
+    credentialType: 'Award',
+    recipientName: 'Sarah Jenkins',
     studentName: 'Sarah Jenkins',
+    recipientId: 'OX-LAW-4402',
     studentId: 'OX-LAW-4402',
-    degree: 'Bachelor of Civil Law (BCL)',
-    institution: 'University of Oxford',
+    organization: 'University of Oxford Faculty of Law',
+    institution: 'University of Oxford Faculty of Law',
     issuerAddress: '0x90F79bf6EB2c4f870365E785982E1f101E93b906',
-    issuerName: 'Oxford Academic Registrar',
+    issuerName: 'University of Oxford Faculty of Law',
     issuedAt: Math.floor(Date.now() / 1000) - 86400 * 300,
+    issueDate: '2026-01-20',
     revocationAt: Math.floor(Date.now() / 1000) - 86400 * 15,
     status: 2, // Revoked
-    gpa: 'First Class Honours',
-    honors: 'Revoked due to administrative reissuance',
+    description: 'Revoked due to administrative reissuance and category re-classification under new governance bylaws.',
+    honors: 'Revoked due to administrative reissuance and category re-classification under new governance bylaws.',
     holderCommitment: '0x9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b',
     credentialHash: '0x3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d',
     txHash: '0x9a1b3c5d7e2f8e4a6c0b9d7e1f3a5c7e9b2d4f6a8c0e2b4d6f8a0c2e4b6d8f0c',
@@ -73,7 +116,7 @@ const DEFAULT_MOCK_ISSUERS = [
   },
   {
     address: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
-    name: 'Massachusetts Institute of Technology (MIT)',
+    name: 'Offchain Labs Developer Academy',
     active: true,
     registeredAt: Math.floor(Date.now() / 1000) - 86400 * 520,
     totalIssued: 2890,
@@ -96,7 +139,7 @@ const DEFAULT_MOCK_ACTIVITIES = [
     type: 'CREDENTIAL_ISSUED',
     credId: '0x8f14b62d3a985e78326a0b47124976cf0e817926b485671d15c1e289bf44901a',
     issuer: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
-    issuerName: 'Stanford Engineering',
+    issuerName: 'Stanford University',
     timestamp: Math.floor(Date.now() / 1000) - 3600 * 2,
     txHash: '0x3c7e9a1b5d2f8e4a6c0b9d7e1f3a5c7e9b2d4f6a8c0e2b4d6f8a0c2e4b6d8f0a',
     blockNumber: 14892041,
@@ -116,7 +159,7 @@ const DEFAULT_MOCK_ACTIVITIES = [
     type: 'ISSUER_REGISTERED',
     credId: null,
     issuer: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
-    issuerName: 'Massachusetts Institute of Technology (MIT)',
+    issuerName: 'Offchain Labs Developer Academy',
     timestamp: Math.floor(Date.now() / 1000) - 86400 * 30,
     txHash: '0x5d7e2f8e4a6c0b9d7e1f3a5c7e9b2d4f6a8c0e2b4d6f8a0c2e4b6d8f0c9a1b3c',
     blockNumber: 14420910,
@@ -125,9 +168,9 @@ const DEFAULT_MOCK_ACTIVITIES = [
 ];
 
 const STORAGE_KEYS = {
-  CREDENTIALS: 'certivault_mock_credentials_v1',
-  ACTIVITIES: 'certivault_mock_activities_v1',
-  ISSUERS: 'certivault_mock_issuers_v1',
+  CREDENTIALS: 'certivault_mock_credentials_v2',
+  ACTIVITIES: 'certivault_mock_activities_v2',
+  ISSUERS: 'certivault_mock_issuers_v2',
 };
 
 export function getMockCredentials() {
@@ -145,18 +188,33 @@ export function getMockCredentials() {
 
 export function saveMockCredential(cred) {
   const list = getMockCredentials();
-  const updated = [cred, ...list];
+  const standardizedCred = {
+    ...cred,
+    title: cred.title || cred.degree || 'Official Credential',
+    degree: cred.title || cred.degree || 'Official Credential',
+    recipientName: cred.recipientName || cred.studentName || 'Recipient',
+    studentName: cred.recipientName || cred.studentName || 'Recipient',
+    recipientId: cred.recipientId || cred.studentId || 'REC-ID',
+    studentId: cred.recipientId || cred.studentId || 'REC-ID',
+    organization: cred.organization || cred.institution || 'Issuing Organization',
+    institution: cred.organization || cred.institution || 'Issuing Organization',
+    credentialType: cred.credentialType || 'Certificate',
+    issueDate: cred.issueDate || new Date((cred.issuedAt || Math.floor(Date.now() / 1000)) * 1000).toISOString().split('T')[0],
+    description: cred.description || cred.honors || 'Validated Credential',
+    honors: cred.description || cred.honors || 'Validated Credential',
+  };
+  const updated = [standardizedCred, ...list];
   localStorage.setItem(STORAGE_KEYS.CREDENTIALS, JSON.stringify(updated));
 
   // Also log to activity
   addMockActivity({
     type: 'CREDENTIAL_ISSUED',
-    credId: cred.id,
-    issuer: cred.issuerAddress,
-    issuerName: cred.institution,
+    credId: standardizedCred.id,
+    issuer: standardizedCred.issuerAddress,
+    issuerName: standardizedCred.organization || standardizedCred.institution,
     timestamp: Math.floor(Date.now() / 1000),
-    txHash: cred.txHash,
-    blockNumber: cred.blockNumber,
+    txHash: standardizedCred.txHash,
+    blockNumber: standardizedCred.blockNumber,
     status: 'SUCCESS',
   });
 
