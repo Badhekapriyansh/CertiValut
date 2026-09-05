@@ -171,13 +171,15 @@ body {
 .nav-logo-badge {
   width: 36px;
   height: 36px;
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid rgba(0, 240, 255, 0.4);
+  background: rgba(0, 240, 255, 0.08);
+  border: 1px solid rgba(0, 240, 255, 0.35);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 14px rgba(0, 240, 255, 0.25);
+  overflow: hidden;
+  padding: 2px;
 }
 
 .nav-logo-text {
