@@ -9,6 +9,7 @@ import {
   XCircle,
   AlertCircle,
   FileText,
+  FileCheck,
   Upload,
   Clock,
   Building,
