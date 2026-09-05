@@ -1,0 +1,14 @@
+{
+  "name": "certivault-stylus-deploy",
+  "version": "0.1.0",
+  "description": "Windows-native Arbitrum Stylus verification and deployment tool for CertiVault",
+  "main": "deploy.js",
+  "scripts": {
+    "check": "node check.js",
+    "deploy": "node deploy.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5"
+  }
+}

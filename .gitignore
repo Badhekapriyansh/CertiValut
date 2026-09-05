@@ -1,0 +1,28 @@
+# Rust build artifacts
+/target/
+target/
+*.wasm
+cargo-stylus-build/
+
+# Node dependencies
+node_modules/
+dist/
+.vite/
+
+# Environment and secrets
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+*.key
+*.pem
+*.secret
+private_key.txt
+
+# Extraneous files
+*.pdf
+.DS_Store
+Thumbs.db

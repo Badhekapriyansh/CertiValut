@@ -1,0 +1,33 @@
+[package]
+name = "certivault"
+version = "0.1.0"
+edition = "2021"
+description = "CertiVault: Institution-Issued Verifiable Academic Credentials on Arbitrum Stylus"
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+stylus-sdk = "0.7.0"
+alloy-primitives = { version = "0.8.14", default-features = false, features = ["tiny-keccak"] }
+alloy-sol-types = { version = "0.8.14", default-features = false }
+
+[dev-dependencies]
+alloy-primitives = "0.8.14"
+alloy-sol-types = "0.8.14"
+
+[build-dependencies]
+alloy-primitives = { version = "0.8.14", features = ["tiny-keccak"] }
+
+[features]
+default = []
+export-abi = ["stylus-sdk/export-abi"]
+
+[profile.release]
+codegen-units = 1
+debug = false
+lto = true
+opt-level = "z"
+panic = "abort"
+strip = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
