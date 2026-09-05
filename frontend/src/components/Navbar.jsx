@@ -64,7 +64,11 @@ export default function Navbar() {
         {/* Left: CertiVault Logo */}
         <div className="nav-logo-group" onClick={() => setActiveTab('home')}>
           <div className="nav-logo-badge">
-            <ShieldCheck size={20} color="var(--primary)" />
+            <img
+              src="/logo.png"
+              alt="CertiVault Logo"
+              style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+            />
           </div>
           <div className="nav-logo-text">
             <div className="nav-logo-title">

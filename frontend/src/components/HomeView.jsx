@@ -48,8 +48,18 @@ export default function HomeView() {
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto' }}>
       {/* Hero Section */}
-      <section style={{ textAlign: 'center', padding: '40px 0 50px' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+      <section style={{ textAlign: 'center', padding: '36px 0 50px' }}>
+        <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: 14, marginBottom: 16 }}>
+          <img
+            src="/logo.png"
+            alt="CertiVault Emblem"
+            style={{
+              width: 80,
+              height: 80,
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 0 24px rgba(0, 240, 255, 0.35))'
+            }}
+          />
           <span className="tech-tag tech-tag-purple">
             <Cpu size={12} /> POWERED BY ARBITRUM STYLUS (RUST WASM)
           </span>
