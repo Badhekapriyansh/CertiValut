@@ -160,7 +160,8 @@ async function main() {
   // Test 1: Admin Initialization & Check
   console.log(`      [Test 1] Initializing Contract Admin to Deployer: ${wallet.address}...`);
   const initTx = await certivault.init();
-  await initTx.wait();
+  const initReceipt = await initTx.wait();
+  console.log(`               Init Tx: ${initTx.hash} (Block: ${initReceipt.blockNumber})`);
   const currentAdmin = await certivault.admin();
   console.log(`               Admin Address: ${currentAdmin} (Expected: ${wallet.address})`);
   if (currentAdmin.toLowerCase() !== wallet.address.toLowerCase()) {
@@ -170,10 +171,11 @@ async function main() {
 
   // Test 2: Register Synthetic Issuer
   const syntheticIssuer = ethers.Wallet.createRandom().address;
-  const syntheticNameHash = ethers.id('SYNTHETIC_TEST_UNIVERSITY');
+  const syntheticNameHash = ethers.id('SYNTHETIC_TEST_ORGANIZATION');
   console.log(`      [Test 2] Registering Synthetic Issuer: ${syntheticIssuer}...`);
   const regTx = await certivault.registerIssuer(syntheticIssuer, syntheticNameHash);
-  await regTx.wait();
+  const regReceipt = await regTx.wait();
+  console.log(`               Register Issuer Tx: ${regTx.hash}`);
   const issuerActive = await certivault.isIssuerActive(syntheticIssuer);
   if (!issuerActive) throw new Error('Issuer registration failed to activate issuer');
   console.log(`               ✅ PASS (Issuer is Active)`);
@@ -184,13 +186,14 @@ async function main() {
   const syntheticCredHash = ethers.id('SYNTHETIC_CERTIFICATE_HASH_VALID');
   console.log(`      [Test 3] Issuing Synthetic Credential: ${syntheticCredId.slice(0, 18)}...`);
 
-  // Note: Only issuer can issue credentials; wallet is admin, let's register wallet as an issuer for test issuance
+  // Note: Register wallet as an issuer for test issuance
   const walletNameHash = ethers.id('DEPLOYER_TEST_ISSUER');
   const regWalletTx = await certivault.registerIssuer(wallet.address, walletNameHash);
   await regWalletTx.wait();
 
   const issueTx = await certivault.issueCredential(syntheticCredId, syntheticHolder, syntheticCredHash);
-  await issueTx.wait();
+  const issueReceipt = await issueTx.wait();
+  console.log(`               Issue Credential Tx: ${issueTx.hash}`);
   console.log(`               ✅ PASS (Credential Issued)`);
 
   // Test 4: Retrieve Credential
@@ -220,13 +223,21 @@ async function main() {
 
   // Test 7: Revoke Credential
   const revokeTx = await certivault.revokeCredential(syntheticCredId);
-  await revokeTx.wait();
+  const revokeReceipt = await revokeTx.wait();
+  console.log(`               Revoke Credential Tx: ${revokeTx.hash}`);
   const verifyRevoked = await certivault.verifyCredential(syntheticCredId, syntheticCredHash);
   if (verifyRevoked.statusCode !== 5) {
     throw new Error(`Expected VERIFY_CREDENTIAL_REVOKED (5), got status code ${verifyRevoked.statusCode}`);
   }
   console.log(`      [Test 7] Revoked Credential Verification (Result: VERIFY_CREDENTIAL_REVOKED=5)`);
   console.log(`               ✅ PASS`);
+
+  // Final Balance Check
+  const finalBalance = await provider.getBalance(wallet.address);
+  const ethSpent = balance - finalBalance;
+  console.log(`\n      Initial Balance: ${ethers.formatEther(balance)} ETH`);
+  console.log(`      Final Balance:   ${ethers.formatEther(finalBalance)} ETH`);
+  console.log(`      Total ETH Spent: ${ethers.formatEther(ethSpent)} ETH`);
 
   // Summary Report
   const summary = {
@@ -237,9 +248,16 @@ async function main() {
     adminAddress: currentAdmin,
     deploymentTxHash: deployReceipt.hash,
     activationTxHash: activateReceipt.hash,
+    initTxHash: initTx.hash,
+    registerIssuerTxHash: regTx.hash,
+    issueCredentialTxHash: issueTx.hash,
+    revokeCredentialTxHash: revokeTx.hash,
     deploymentBlock: deployReceipt.blockNumber,
     activationBlock: activateReceipt.blockNumber,
     stylusProgramVersion: Number(programVersion),
+    initialBalanceEth: ethers.formatEther(balance),
+    finalBalanceEth: ethers.formatEther(finalBalance),
+    ethSpent: ethers.formatEther(ethSpent),
     wasmSize,
     compressedSize,
     wasmHash,

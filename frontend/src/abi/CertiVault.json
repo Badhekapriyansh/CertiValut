@@ -1,24 +1,24 @@
 [
   {
     "type": "function",
-    "name": "admin",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
-    "name": "pendingAdmin",
-    "inputs": [],
-    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
-    "stateMutability": "view"
-  },
-  {
-    "type": "function",
     "name": "init",
     "inputs": [],
     "outputs": [],
     "stateMutability": "nonpayable"
+  },
+  {
+    "type": "function",
+    "name": "getAdmin",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
+  },
+  {
+    "type": "function",
+    "name": "getPendingAdmin",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "address", "internalType": "address" }],
+    "stateMutability": "view"
   },
   {
     "type": "function",
@@ -70,7 +70,7 @@
     "name": "getIssuer",
     "inputs": [{ "name": "issuer", "type": "address", "internalType": "address" }],
     "outputs": [
-      { "name": "exists", "type": "bool", "internalType": "bool" },
+      { "name": "isRegistered", "type": "bool", "internalType": "bool" },
       { "name": "isSuspended", "type": "bool", "internalType": "bool" },
       { "name": "registeredAt", "type": "uint64", "internalType": "uint64" },
       { "name": "nameHash", "type": "bytes32", "internalType": "bytes32" }
@@ -79,7 +79,7 @@
   },
   {
     "type": "function",
-    "name": "isIssuerActive",
+    "name": "isActiveIssuer",
     "inputs": [{ "name": "issuer", "type": "address", "internalType": "address" }],
     "outputs": [{ "name": "", "type": "bool", "internalType": "bool" }],
     "stateMutability": "view"
@@ -88,9 +88,9 @@
     "type": "function",
     "name": "issueCredential",
     "inputs": [
-      { "name": "credId", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "credentialId", "type": "bytes32", "internalType": "bytes32" },
       { "name": "holderCommitment", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "credHash", "type": "bytes32", "internalType": "bytes32" }
+      { "name": "credentialHash", "type": "bytes32", "internalType": "bytes32" }
     ],
     "outputs": [],
     "stateMutability": "nonpayable"
@@ -98,19 +98,19 @@
   {
     "type": "function",
     "name": "revokeCredential",
-    "inputs": [{ "name": "credId", "type": "bytes32", "internalType": "bytes32" }],
+    "inputs": [{ "name": "credentialId", "type": "bytes32", "internalType": "bytes32" }],
     "outputs": [],
     "stateMutability": "nonpayable"
   },
   {
     "type": "function",
     "name": "getCredential",
-    "inputs": [{ "name": "credId", "type": "bytes32", "internalType": "bytes32" }],
+    "inputs": [{ "name": "credentialId", "type": "bytes32", "internalType": "bytes32" }],
     "outputs": [
       { "name": "exists", "type": "bool", "internalType": "bool" },
       { "name": "issuer", "type": "address", "internalType": "address" },
       { "name": "holderCommitment", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "credHash", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "credentialHash", "type": "bytes32", "internalType": "bytes32" },
       { "name": "issuedAt", "type": "uint64", "internalType": "uint64" },
       { "name": "revocationAt", "type": "uint64", "internalType": "uint64" },
       { "name": "status", "type": "uint8", "internalType": "uint8" }
@@ -121,63 +121,27 @@
     "type": "function",
     "name": "verifyCredential",
     "inputs": [
-      { "name": "credId", "type": "bytes32", "internalType": "bytes32" },
-      { "name": "credHash", "type": "bytes32", "internalType": "bytes32" }
+      { "name": "credentialId", "type": "bytes32", "internalType": "bytes32" },
+      { "name": "expectedHash", "type": "bytes32", "internalType": "bytes32" }
     ],
     "outputs": [
-      { "name": "statusCode", "type": "uint8", "internalType": "uint8" },
-      { "name": "credentialStatus", "type": "uint8", "internalType": "uint8" },
+      { "name": "isValid", "type": "bool", "internalType": "bool" },
+      { "name": "exists", "type": "bool", "internalType": "bool" },
+      { "name": "issuerAuthorized", "type": "bool", "internalType": "bool" },
+      { "name": "hashMatches", "type": "bool", "internalType": "bool" },
+      { "name": "status", "type": "uint8", "internalType": "uint8" },
       { "name": "issuer", "type": "address", "internalType": "address" },
       { "name": "issuedAt", "type": "uint64", "internalType": "uint64" },
-      { "name": "revocationAt", "type": "uint64", "internalType": "uint64" }
+      { "name": "statusCode", "type": "uint8", "internalType": "uint8" }
     ],
     "stateMutability": "view"
-  },
-  {
-    "type": "event",
-    "name": "AdminInitialized",
-    "inputs": [
-      { "name": "admin", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "timestamp", "type": "uint64", "indexed": false, "internalType": "uint64" }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "AdminTransferProposed",
-    "inputs": [
-      { "name": "currentAdmin", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "proposedAdmin", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "timestamp", "type": "uint64", "indexed": false, "internalType": "uint64" }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "AdminTransferAccepted",
-    "inputs": [
-      { "name": "oldAdmin", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "newAdmin", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "timestamp", "type": "uint64", "indexed": false, "internalType": "uint64" }
-    ],
-    "anonymous": false
-  },
-  {
-    "type": "event",
-    "name": "AdminTransferCancelled",
-    "inputs": [
-      { "name": "currentAdmin", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "cancelledAdmin", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "timestamp", "type": "uint64", "indexed": false, "internalType": "uint64" }
-    ],
-    "anonymous": false
   },
   {
     "type": "event",
     "name": "IssuerRegistered",
     "inputs": [
       { "name": "issuer", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "nameHash", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+      { "name": "nameHash", "type": "bytes32", "indexed": false, "internalType": "bytes32" },
       { "name": "timestamp", "type": "uint64", "indexed": false, "internalType": "uint64" }
     ],
     "anonymous": false
@@ -204,11 +168,11 @@
     "type": "event",
     "name": "CredentialIssued",
     "inputs": [
-      { "name": "credId", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+      { "name": "credentialId", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
       { "name": "issuer", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "holderCommitment", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
-      { "name": "credHash", "type": "bytes32", "indexed": false, "internalType": "bytes32" },
-      { "name": "issuedAt", "type": "uint64", "indexed": false, "internalType": "uint64" }
+      { "name": "holderCommitment", "type": "bytes32", "indexed": false, "internalType": "bytes32" },
+      { "name": "credentialHash", "type": "bytes32", "indexed": false, "internalType": "bytes32" },
+      { "name": "timestamp", "type": "uint64", "indexed": false, "internalType": "uint64" }
     ],
     "anonymous": false
   },
@@ -216,26 +180,26 @@
     "type": "event",
     "name": "CredentialRevoked",
     "inputs": [
-      { "name": "credId", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
+      { "name": "credentialId", "type": "bytes32", "indexed": true, "internalType": "bytes32" },
       { "name": "issuer", "type": "address", "indexed": true, "internalType": "address" },
-      { "name": "revocationAt", "type": "uint64", "indexed": false, "internalType": "uint64" }
+      { "name": "timestamp", "type": "uint64", "indexed": false, "internalType": "uint64" }
     ],
     "anonymous": false
   },
   { "type": "error", "name": "Unauthorized", "inputs": [] },
-  { "type": "error", "name": "InvalidAddress", "inputs": [] },
+  { "type": "error", "name": "NotAuthorizedIssuer", "inputs": [] },
+  { "type": "error", "name": "IssuerIsSuspended", "inputs": [] },
   { "type": "error", "name": "IssuerAlreadyRegistered", "inputs": [] },
   { "type": "error", "name": "IssuerNotFound", "inputs": [] },
-  { "type": "error", "name": "IssuerIsSuspended", "inputs": [] },
-  { "type": "error", "name": "InvalidCredential", "inputs": [] },
   { "type": "error", "name": "CredentialAlreadyExists", "inputs": [] },
   { "type": "error", "name": "CredentialNotFound", "inputs": [] },
-  { "type": "error", "name": "UnauthorizedRevocation", "inputs": [] },
+  { "type": "error", "name": "InvalidCredential", "inputs": [] },
   { "type": "error", "name": "AlreadyRevoked", "inputs": [] },
   { "type": "error", "name": "InvalidStateTransition", "inputs": [] },
+  { "type": "error", "name": "UnauthorizedRevocation", "inputs": [] },
+  { "type": "error", "name": "ZeroAddress", "inputs": [] },
+  { "type": "error", "name": "EmptyHash", "inputs": [] },
   { "type": "error", "name": "AlreadyInitialized", "inputs": [] },
   { "type": "error", "name": "NoPendingAdmin", "inputs": [] },
-  { "type": "error", "name": "InvalidHolderCommitment", "inputs": [] },
-  { "type": "error", "name": "ZeroHashNotAllowed", "inputs": [] },
-  { "type": "error", "name": "InvalidNameHash", "inputs": [] }
+  { "type": "error", "name": "SameAdmin", "inputs": [] }
 ]

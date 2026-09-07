@@ -32,12 +32,12 @@ function getSignerContract(signer) {
 
 export async function getAdmin() {
   const contract = getReadOnlyContract();
-  return await contract.admin();
+  return await contract.getAdmin();
 }
 
 export async function getPendingAdmin() {
   const contract = getReadOnlyContract();
-  return await contract.pendingAdmin();
+  return await contract.getPendingAdmin();
 }
 
 export async function getIssuer(issuerAddress) {
@@ -45,6 +45,7 @@ export async function getIssuer(issuerAddress) {
   const res = await contract.getIssuer(issuerAddress);
   return {
     exists: res[0],
+    isRegistered: res[0],
     isSuspended: res[1],
     registeredAt: Number(res[2]),
     nameHash: res[3],
@@ -53,7 +54,7 @@ export async function getIssuer(issuerAddress) {
 
 export async function isIssuerActive(issuerAddress) {
   const contract = getReadOnlyContract();
-  return await contract.isIssuerActive(issuerAddress);
+  return await contract.isActiveIssuer(issuerAddress);
 }
 
 export async function getCredential(credId) {
@@ -74,11 +75,14 @@ export async function verifyCredential(credId, credHash) {
   const contract = getReadOnlyContract();
   const res = await contract.verifyCredential(credId, credHash);
   return {
-    statusCode: Number(res[0]), // 0: Success, 1: NotFound, 2: IssuerNotReg, 3: IssuerSuspended, 4: HashMismatch, 5: Revoked
-    credentialStatus: Number(res[1]),
-    issuer: res[2],
-    issuedAt: Number(res[3]),
-    revocationAt: Number(res[4]),
+    isValid: Boolean(res[0]),
+    exists: Boolean(res[1]),
+    issuerAuthorized: Boolean(res[2]),
+    hashMatches: Boolean(res[3]),
+    credentialStatus: Number(res[4]),
+    issuer: res[5],
+    issuedAt: Number(res[6]),
+    statusCode: Number(res[7]), // 0: Success, 1: NotFound, 2: IssuerNotReg, 3: IssuerSuspended, 4: HashMismatch, 5: Revoked
   };
 }
 
