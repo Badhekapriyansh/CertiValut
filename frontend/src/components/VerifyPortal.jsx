@@ -163,7 +163,7 @@ export default function VerifyPortal() {
           <div className="input-group">
             <label className="input-label" style={{ justifyContent: 'space-between' }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <FileText size={16} /> Document / Certificate Hash (bytes32 hex)
+                <FileText size={16} /> Document / Credential Fingerprint Hash (bytes32 hex)
               </span>
               {fileHashCalculated && (
                 <span style={{ fontSize: '0.75rem', color: 'var(--primary)' }}>
@@ -193,7 +193,7 @@ export default function VerifyPortal() {
             <label style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <Upload size={20} color="var(--primary)" />
               <span style={{ fontSize: '0.85rem', color: 'var(--text-main)', fontWeight: 500 }}>
-                Upload Certificate PDF / Document to auto-compute hash
+                Upload Credential Document PDF to auto-compute hash
               </span>
               <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 Processed 100% client-side in your browser for zero-knowledge privacy

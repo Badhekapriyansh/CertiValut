@@ -92,17 +92,25 @@ export default function HomeView() {
           <button
             onClick={() => setActiveTab('verify')}
             className="btn btn-primary"
-            style={{ padding: '14px 28px', fontSize: '1rem' }}
+            style={{ padding: '14px 24px', fontSize: '0.96rem' }}
           >
-            <Search size={18} /> Public Credential Verifier
+            <Search size={18} /> Public Verifier
+          </button>
+
+          <button
+            onClick={() => setActiveTab('passport')}
+            className="btn btn-secondary"
+            style={{ padding: '14px 24px', fontSize: '0.96rem' }}
+          >
+            <FileCheck size={18} /> Credential Passport
           </button>
 
           <button
             onClick={() => setActiveTab('dashboard')}
             className="btn btn-secondary"
-            style={{ padding: '14px 28px', fontSize: '1rem' }}
+            style={{ padding: '14px 24px', fontSize: '0.96rem' }}
           >
-            <Building size={18} /> Issuer Operations Center
+            <Building size={18} /> Issuer Operations
           </button>
         </div>
 

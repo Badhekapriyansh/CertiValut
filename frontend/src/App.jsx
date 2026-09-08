@@ -12,7 +12,12 @@ import RevokeView from './components/RevokeView';
 import ActivityView from './components/ActivityView';
 import AdminView from './components/AdminView';
 import SettingsView from './components/SettingsView';
+import OrganizationsView from './components/OrganizationsView';
+import OrgRegisterView from './components/OrgRegisterView';
+import PassportView from './components/PassportView';
+import IssuerProfileView from './components/IssuerProfileView';
 import CredentialDetailModal from './components/CredentialDetailModal';
+import QrModal from './components/QrModal';
 import { CheckCircle2, AlertCircle, Info, RefreshCw } from 'lucide-react';
 
 class ErrorBoundary extends Component {
@@ -69,7 +74,7 @@ class ErrorBoundary extends Component {
 }
 
 function MainLayout() {
-  const { activeTab, toast } = useApp();
+  const { activeTab, toast, qrModalData, setQrModalData } = useApp();
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative' }}>
@@ -113,7 +118,11 @@ function MainLayout() {
       <main style={{ flex: 1, padding: '36px 20px 60px', maxWidth: 1240, width: '100%', margin: '0 auto' }}>
         {activeTab === 'home' && <HomeView />}
         {activeTab === 'verify' && <VerifyView />}
+        {activeTab === 'passport' && <PassportView />}
         {activeTab === 'dashboard' && <DashboardView />}
+        {activeTab === 'organizations' && <OrganizationsView />}
+        {activeTab === 'org-register' && <OrgRegisterView />}
+        {activeTab === 'issuer-profile' && <IssuerProfileView />}
         {activeTab === 'credentials' && <CredentialsView />}
         {activeTab === 'issue' && <IssueWorkflowView />}
         {activeTab === 'revoke' && <RevokeView />}
@@ -124,6 +133,14 @@ function MainLayout() {
 
       {/* Modal Inspection Preview */}
       <CredentialDetailModal />
+
+      {/* QR Code Verification Modal */}
+      {qrModalData && (
+        <QrModal
+          credential={qrModalData}
+          onClose={() => setQrModalData(null)}
+        />
+      )}
 
       {/* Enterprise Footer */}
       <footer style={{

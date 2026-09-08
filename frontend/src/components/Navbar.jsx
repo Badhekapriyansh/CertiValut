@@ -17,7 +17,9 @@ import {
   Power,
   ChevronDown,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Building2,
+  BookmarkCheck
 } from 'lucide-react';
 import { NETWORK_CONFIG } from '../config/contracts';
 
@@ -41,7 +43,9 @@ export default function Navbar() {
   const navTabs = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'verify', label: 'Verify', icon: Search },
+    { id: 'passport', label: 'Passport', icon: BookmarkCheck },
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'organizations', label: 'Organizations', icon: Building2 },
     { id: 'credentials', label: 'Credentials', icon: Award },
     { id: 'issue', label: 'Issue', icon: PlusCircle },
     { id: 'revoke', label: 'Revoke', icon: Ban },

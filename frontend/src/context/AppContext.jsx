@@ -1,6 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { IS_CONTRACT_CONFIGURED } from '../config/contracts';
-import { getMockCredentials, getMockActivities, getMockIssuers } from '../services/mockDataService';
+import {
+  getMockCredentials,
+  getMockActivities,
+  getMockIssuers,
+  getMockOrganizations,
+  saveMockOrganization,
+  updateOrganizationStatus
+} from '../services/mockDataService';
 import confetti from 'canvas-confetti';
 
 const AppContext = createContext(null);
@@ -24,6 +31,15 @@ export function AppProvider({ children }) {
   // Selected Credential for Deep Proof Modal
   const [inspectCredential, setInspectCredential] = useState(null);
 
+  // Selected Organization for Profile Inspection
+  const [selectedOrg, setSelectedOrg] = useState(null);
+
+  // Selected Issuer Address for Public Issuer Profile
+  const [selectedIssuerAddress, setSelectedIssuerAddress] = useState('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+
+  // QR Modal Active Credential
+  const [qrModalData, setQrModalData] = useState(null);
+
   // Quick Preset Search for Verify View
   const [quickVerifyPreset, setQuickVerifyPreset] = useState(null);
 
@@ -34,14 +50,39 @@ export function AppProvider({ children }) {
   const [credentials, setCredentials] = useState(() => getMockCredentials());
   const [activities, setActivities] = useState(() => getMockActivities());
   const [issuers, setIssuers] = useState(() => getMockIssuers());
+  const [organizations, setOrganizations] = useState(() => getMockOrganizations());
 
   const refreshData = () => {
     setCredentials(getMockCredentials());
     setActivities(getMockActivities());
     setIssuers(getMockIssuers());
+    setOrganizations(getMockOrganizations());
   };
 
+  // Parse URL Deep Links (e.g. ?id=0x... or ?tab=verify&id=0x... or ?tab=issuer-profile&address=0x...)
   useEffect(() => {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlId = urlParams.get('id') || urlParams.get('credId');
+      const urlTab = urlParams.get('tab');
+      const urlAddress = urlParams.get('address') || urlParams.get('issuer');
+
+      if (urlId) {
+        setQuickVerifyPreset({ id: urlId });
+        setActiveTabState('verify');
+      } else if (urlTab) {
+        if (urlTab === 'issuer-profile' && urlAddress) {
+          setSelectedIssuerAddress(urlAddress);
+        }
+        setActiveTabState(urlTab);
+      } else if (window.location.pathname.startsWith('/passport')) {
+        setActiveTabState('passport');
+      } else if (window.location.pathname.startsWith('/verify')) {
+        setActiveTabState('verify');
+      }
+    } catch (e) {
+      // ignore
+    }
     refreshData();
   }, []);
 
@@ -72,6 +113,35 @@ export function AppProvider({ children }) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const openIssuerProfile = (issuerAddress) => {
+    if (issuerAddress) {
+      setSelectedIssuerAddress(issuerAddress);
+    }
+    setActiveTab('issuer-profile');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const registerOrganization = (orgData) => {
+    const updated = saveMockOrganization(orgData);
+    setOrganizations(updated);
+    refreshData();
+    return updated;
+  };
+
+  const accreditOrganization = (orgIdOrAddress) => {
+    const updated = updateOrganizationStatus(orgIdOrAddress, 'ACTIVE');
+    setOrganizations(updated);
+    refreshData();
+    return updated;
+  };
+
+  const suspendOrganization = (orgIdOrAddress) => {
+    const updated = updateOrganizationStatus(orgIdOrAddress, 'SUSPENDED');
+    setOrganizations(updated);
+    refreshData();
+    return updated;
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -81,6 +151,13 @@ export function AppProvider({ children }) {
         setIsDemoMode,
         inspectCredential,
         setInspectCredential,
+        selectedOrg,
+        setSelectedOrg,
+        selectedIssuerAddress,
+        setSelectedIssuerAddress,
+        openIssuerProfile,
+        qrModalData,
+        setQrModalData,
         quickVerifyPreset,
         setQuickVerifyPreset,
         launchVerifyWithPreset,
@@ -90,7 +167,11 @@ export function AppProvider({ children }) {
         credentials,
         activities,
         issuers,
+        organizations,
         refreshData,
+        registerOrganization,
+        accreditOrganization,
+        suspendOrganization,
       }}
     >
       {children}

@@ -23,11 +23,23 @@ import {
   ChevronUp,
   Award,
   Copy,
-  Printer
+  Printer,
+  QrCode,
+  Building2,
+  ArrowRight
 } from 'lucide-react';
 
 export default function VerifyView() {
-  const { isDemoMode, quickVerifyPreset, setQuickVerifyPreset, triggerConfetti, showToast } = useApp();
+  const {
+    isDemoMode,
+    quickVerifyPreset,
+    setQuickVerifyPreset,
+    triggerConfetti,
+    showToast,
+    setInspectCredential,
+    openIssuerProfile,
+    setQrModalData
+  } = useApp();
 
   const [credId, setCredId] = useState('');
   const [credHash, setCredHash] = useState('');
@@ -38,7 +50,7 @@ export default function VerifyView() {
   const [showTechnicalDrawer, setShowTechnicalDrawer] = useState(false);
   const resultRef = useRef(null);
 
-  // Auto-fill if redirected with preset from Home or Floating Assistant
+  // Auto-fill if redirected with preset from Home, Floating Assistant, or URL deep link
   useEffect(() => {
     if (quickVerifyPreset && quickVerifyPreset.id) {
       const targetId = String(quickVerifyPreset.id);
@@ -47,6 +59,16 @@ export default function VerifyView() {
       setCredHash(targetHash);
       handleExecuteVerification(targetId, targetHash);
       setQuickVerifyPreset(null);
+    } else {
+      // Check URL query parameters as well
+      try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlId = urlParams.get('id') || urlParams.get('credId');
+        if (urlId && urlId !== credId) {
+          setCredId(urlId);
+          handleExecuteVerification(urlId, '');
+        }
+      } catch (e) {}
     }
   }, [quickVerifyPreset]);
 
@@ -126,78 +148,100 @@ export default function VerifyView() {
     }
   };
 
+  const handlePrintCredential = () => {
+    if (!result) return;
+    const printData = {
+      id: credId,
+      credId: credId,
+      credentialHash: credHash || result.details?.credentialHash || 'N/A',
+      credHash: credHash || result.details?.credentialHash || 'N/A',
+      title: result.details?.title || result.details?.degree || 'Verifiable Credential Record',
+      credentialType: result.details?.credentialType || 'Verifiable Credential',
+      recipientName: result.details?.recipientName || result.details?.studentName || 'Recipient',
+      recipientId: result.details?.recipientId || result.details?.studentId || 'N/A',
+      organization: result.details?.organization || result.details?.institution || result.issuer || 'Accredited Authority',
+      issuerAddress: result.issuer || result.details?.issuerAddress || 'N/A',
+      issueDate: result.details?.issueDate || (result.details?.issuedAt > 0 ? new Date(result.details.issuedAt * 1000).toLocaleDateString() : 'N/A'),
+      issuedAt: result.details?.issuedAt,
+      description: result.details?.description || result.details?.honors,
+      holderCommitment: result.details?.holderCommitment,
+      verificationStatusCode: result.statusCode,
+    };
+    setInspectCredential(printData);
+  };
+
   const getStatusDisplay = (code) => {
     switch (code) {
       case 0:
         return {
           title: 'OFFICIALLY VERIFIED & AUTHENTIC',
-          badgeText: 'VERIFIED ON-CHAIN',
+          badgeText: 'VERIFIED',
           badgeClass: 'tech-tag-success',
           color: 'var(--success)',
           bg: 'rgba(0, 255, 135, 0.05)',
           border: 'rgba(0, 255, 135, 0.3)',
           icon: <CheckCircle2 size={44} color="var(--success)" />,
-          description: 'This credential has been cryptographically validated against the Arbitrum Stylus immutable ledger. The issuing organization is in good standing and the content is unaltered.',
+          description: 'This credential has been cryptographically validated against the Arbitrum Stylus immutable ledger. The issuing organization is authorized and the document fingerprint matches.',
         };
       case 1:
         return {
-          title: 'CREDENTIAL RECORD NOT FOUND',
-          badgeText: 'NOT FOUND',
+          title: 'CREDENTIAL NOT FOUND',
+          badgeText: 'NOT VERIFIED',
           badgeClass: 'tech-tag-danger',
           color: 'var(--danger)',
           bg: 'rgba(255, 71, 87, 0.05)',
           border: 'rgba(255, 71, 87, 0.3)',
           icon: <XCircle size={44} color="var(--danger)" />,
-          description: 'The specified Credential ID does not exist in the CertiVault registry.',
+          description: 'The specified Credential ID does not exist on the Arbitrum Stylus ledger.',
         };
       case 2:
         return {
-          title: 'ISSUING ORGANIZATION NOT ACCREDITED',
-          badgeText: 'UNAUTHORIZED ISSUER',
+          title: 'ISSUER NOT ACCREDITED',
+          badgeText: 'NOT VERIFIED',
           badgeClass: 'tech-tag-warning',
           color: 'var(--warning)',
           bg: 'rgba(255, 184, 0, 0.05)',
           border: 'rgba(255, 184, 0, 0.3)',
           icon: <AlertCircle size={44} color="var(--warning)" />,
-          description: 'The entity that minted this record is not an accredited organization in the governance trust root.',
+          description: 'The entity that issued this record is not an accredited organization in the protocol governance trust root.',
         };
       case 3:
         return {
-          title: 'ISSUING ORGANIZATION SUSPENDED',
-          badgeText: 'ISSUER SUSPENDED',
+          title: 'ISSUER SUSPENDED / INACTIVE',
+          badgeText: 'NOT VERIFIED',
           badgeClass: 'tech-tag-warning',
           color: 'var(--warning)',
           bg: 'rgba(255, 184, 0, 0.05)',
           border: 'rgba(255, 184, 0, 0.3)',
           icon: <AlertCircle size={44} color="var(--warning)" />,
-          description: 'The issuing organization currently has its verification privileges suspended pending administrative review.',
+          description: 'The issuing organization currently has its verification privileges suspended.',
         };
       case 4:
         return {
-          title: 'CRYPTOGRAPHIC HASH MISMATCH (TAMPERED)',
-          badgeText: 'ALTERATION DETECTED',
+          title: 'DOCUMENT HASH MISMATCH (ALTERATION DETECTED)',
+          badgeText: 'NOT VERIFIED',
           badgeClass: 'tech-tag-danger',
           color: 'var(--danger)',
           bg: 'rgba(255, 71, 87, 0.05)',
           border: 'rgba(255, 71, 87, 0.3)',
           icon: <XCircle size={44} color="var(--danger)" />,
-          description: 'The document or certificate hash provided does not match the immutable cryptographic root stored on Arbitrum Stylus.',
+          description: 'The submitted document/data does not match the cryptographic fingerprint registered for this credential.',
         };
       case 5:
         return {
           title: 'CREDENTIAL PERMANENTLY REVOKED',
-          badgeText: 'REVOKED ATTESTATION',
+          badgeText: 'REVOKED',
           badgeClass: 'tech-tag-danger',
           color: 'var(--danger)',
           bg: 'rgba(255, 71, 87, 0.05)',
           border: 'rgba(255, 71, 87, 0.3)',
           icon: <AlertCircle size={44} color="var(--danger)" />,
-          description: 'This credential was officially revoked by the issuing organization. It is no longer valid for official standing.',
+          description: 'This credential was previously issued but has been officially revoked by the issuing organization.',
         };
       default:
         return {
           title: 'UNKNOWN VERIFICATION STATE',
-          badgeText: 'UNKNOWN',
+          badgeText: 'NOT VERIFIED',
           badgeClass: 'tech-tag',
           color: 'var(--text-sub)',
           bg: 'rgba(255, 255, 255, 0.02)',
@@ -280,7 +324,7 @@ export default function VerifyView() {
             <label style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 }}>
               <Upload size={22} color="var(--primary)" />
               <span style={{ fontSize: '0.85rem', color: 'var(--text-main)', fontWeight: 600 }}>
-                Upload Certificate PDF to verify digital fingerprint
+                Upload Credential Document PDF to verify digital fingerprint
               </span>
               <span style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
                 Computed client-side in RAM • Your document is never uploaded to any server or blockchain
@@ -357,14 +401,30 @@ export default function VerifyView() {
               </div>
             </div>
 
-            {/* Print / Export Receipt Button */}
-            <button
-              onClick={() => window.print()}
-              className="btn btn-secondary"
-              style={{ padding: '8px 14px', fontSize: '0.8rem' }}
-            >
-              <Printer size={14} /> Print Verification Receipt
-            </button>
+            {/* Actions: Print Credential + Share QR */}
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+              <button
+                onClick={() => setQrModalData({
+                  id: credId,
+                  credId: credId,
+                  title: result.details?.title || result.details?.degree,
+                  organization: result.details?.organization || result.details?.institution || result.issuer,
+                  status: result.statusCode === 5 ? 2 : (result.statusCode === 0 ? 1 : 0),
+                  credentialHash: credHash || result.details?.credentialHash
+                })}
+                className="btn btn-secondary"
+                style={{ padding: '8px 14px', fontSize: '0.8rem' }}
+              >
+                <QrCode size={14} /> Share QR
+              </button>
+              <button
+                onClick={handlePrintCredential}
+                className="btn btn-secondary"
+                style={{ padding: '8px 14px', fontSize: '0.8rem' }}
+              >
+                <Printer size={14} /> Print Credential
+              </button>
+            </div>
           </div>
 
           <p style={{ color: 'var(--text-sub)', fontSize: '0.92rem', lineHeight: 1.5, marginBottom: 24 }}>
@@ -389,8 +449,31 @@ export default function VerifyView() {
                   <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <Building size={13} /> ISSUING ORGANIZATION
                   </div>
-                  <div style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '1rem' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '1rem', marginBottom: 6 }}>
                     {result.details.organization || result.details.institution || result.issuer || 'Accredited Organization'}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span className="badge badge-success" style={{ fontSize: '0.68rem', display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      <CheckCircle2 size={10} /> Accredited & Active
+                    </span>
+                    <button
+                      onClick={() => openIssuerProfile(result.issuer || result.details?.issuerAddress || '0x70997970C51812dc3A010C7d01b50e0d17dc79C8')}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'var(--primary)',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        padding: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        textDecoration: 'underline'
+                      }}
+                    >
+                      <Building2 size={11} /> View Issuer Trust Profile
+                    </button>
                   </div>
                 </div>
 

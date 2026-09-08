@@ -167,11 +167,172 @@ const DEFAULT_MOCK_ACTIVITIES = [
   },
 ];
 
+const DEFAULT_MOCK_ORGANIZATIONS = [
+  {
+    id: 'org-stanford-01',
+    name: 'Stanford University School of Engineering',
+    shortName: 'Stanford Eng',
+    type: 'University / College',
+    email: 'accreditation@stanford.edu',
+    country: 'United States',
+    state: 'California',
+    city: 'Stanford',
+    website: 'https://engineering.stanford.edu',
+    description: 'Premier academic institution dedicated to groundbreaking research and engineering education in computer science, distributed systems, and cryptography.',
+    contactPerson: 'Dr. James Thorne',
+    logo: '🏛️',
+    issuerIdentityType: 'external_wallet',
+    issuerAddress: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
+    status: 'ACTIVE',
+    createdAt: Math.floor(Date.now() / 1000) - 86400 * 400,
+    accreditedAt: Math.floor(Date.now() / 1000) - 86400 * 399,
+  },
+  {
+    id: 'org-offchain-02',
+    name: 'Offchain Labs Developer Academy',
+    shortName: 'Offchain Academy',
+    type: 'Certification Provider',
+    email: 'education@offchainlabs.com',
+    country: 'United States',
+    state: 'New Jersey',
+    city: 'Princeton',
+    website: 'https://offchainlabs.com',
+    description: 'Official training and certification provider for Arbitrum Nitro & Stylus smart contract engineering.',
+    contactPerson: 'Rachel Miller',
+    logo: '⚡',
+    issuerIdentityType: 'external_wallet',
+    issuerAddress: '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
+    status: 'ACTIVE',
+    createdAt: Math.floor(Date.now() / 1000) - 86400 * 520,
+    accreditedAt: Math.floor(Date.now() / 1000) - 86400 * 519,
+  },
+  {
+    id: 'org-oxford-03',
+    name: 'University of Oxford',
+    shortName: 'Oxford Law',
+    type: 'University / College',
+    email: 'law.credentials@ox.ac.uk',
+    country: 'United Kingdom',
+    state: 'Oxfordshire',
+    city: 'Oxford',
+    website: 'https://ox.ac.uk',
+    description: 'Collegiate research university renowned for historical academic excellence and legal jurisprudence.',
+    contactPerson: 'Prof. Alistair Finch',
+    logo: '🎓',
+    issuerIdentityType: 'external_wallet',
+    issuerAddress: '0x90F79bf6EB2c4f870365E785982E1f101E93b906',
+    status: 'ACTIVE',
+    createdAt: Math.floor(Date.now() / 1000) - 86400 * 600,
+    accreditedAt: Math.floor(Date.now() / 1000) - 86400 * 598,
+  },
+  {
+    id: 'org-nova-tech-04',
+    name: 'Nova Institute of Advanced Technology',
+    shortName: 'Nova Tech',
+    type: 'Training Institute',
+    email: 'registrar@novatech.edu',
+    country: 'Canada',
+    state: 'Ontario',
+    city: 'Toronto',
+    website: 'https://novatech.example.edu',
+    description: 'Global workforce training institute for AI, cybersecurity, and Web3 developers.',
+    contactPerson: 'Dr. Karen Zhao',
+    logo: '🚀',
+    issuerIdentityType: 'managed_identity',
+    issuerAddress: '0x7A91B3c5d7E2f8E4a6C0B9D7e1F3a5C7e9B242F8',
+    status: 'PENDING_ACCREDITATION',
+    createdAt: Math.floor(Date.now() / 1000) - 86400 * 3,
+    accreditedAt: null,
+  }
+];
+
 const STORAGE_KEYS = {
   CREDENTIALS: 'certivault_mock_credentials_v2',
   ACTIVITIES: 'certivault_mock_activities_v2',
   ISSUERS: 'certivault_mock_issuers_v2',
+  ORGANIZATIONS: 'certivault_mock_organizations_v2',
 };
+
+export function getMockOrganizations() {
+  const cached = localStorage.getItem(STORAGE_KEYS.ORGANIZATIONS);
+  if (cached) {
+    try {
+      return JSON.parse(cached);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  localStorage.setItem(STORAGE_KEYS.ORGANIZATIONS, JSON.stringify(DEFAULT_MOCK_ORGANIZATIONS));
+  return DEFAULT_MOCK_ORGANIZATIONS;
+}
+
+export function saveMockOrganization(org) {
+  const list = getMockOrganizations();
+  const newOrg = {
+    ...org,
+    id: org.id || `org-${Date.now().toString(36)}`,
+    status: org.status || 'PENDING_ACCREDITATION',
+    createdAt: org.createdAt || Math.floor(Date.now() / 1000),
+    issuerIdentityType: org.issuerIdentityType || 'managed_identity',
+    issuerAddress: org.issuerAddress || '0x' + Array.from({ length: 40 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+  };
+  const updated = [newOrg, ...list.filter(o => o.id !== newOrg.id)];
+  localStorage.setItem(STORAGE_KEYS.ORGANIZATIONS, JSON.stringify(updated));
+
+  addMockActivity({
+    type: 'ORGANIZATION_REGISTERED',
+    credId: null,
+    issuer: newOrg.issuerAddress,
+    issuerName: newOrg.name,
+    timestamp: Math.floor(Date.now() / 1000),
+    txHash: '0x' + Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join(''),
+    blockNumber: 14899300,
+    status: 'REGISTERED',
+  });
+
+  return updated;
+}
+
+export function updateOrganizationStatus(orgId, status) {
+  const list = getMockOrganizations();
+  const updated = list.map((o) => {
+    if (o.id === orgId || o.issuerAddress.toLowerCase() === orgId.toLowerCase()) {
+      return {
+        ...o,
+        status,
+        accreditedAt: status === 'ACTIVE' ? (o.accreditedAt || Math.floor(Date.now() / 1000)) : o.accreditedAt,
+      };
+    }
+    return o;
+  });
+  localStorage.setItem(STORAGE_KEYS.ORGANIZATIONS, JSON.stringify(updated));
+
+  // Also sync with issuers list if active
+  const targetOrg = updated.find(o => o.id === orgId || o.issuerAddress.toLowerCase() === orgId.toLowerCase());
+  if (targetOrg) {
+    const issuers = getMockIssuers();
+    const existingIssuer = issuers.find(i => i.address.toLowerCase() === targetOrg.issuerAddress.toLowerCase());
+    let updatedIssuers;
+    if (existingIssuer) {
+      updatedIssuers = issuers.map(i => i.address.toLowerCase() === targetOrg.issuerAddress.toLowerCase() ? { ...i, active: status === 'ACTIVE' } : i);
+    } else if (status === 'ACTIVE') {
+      updatedIssuers = [{
+        address: targetOrg.issuerAddress,
+        name: targetOrg.name,
+        active: true,
+        registeredAt: Math.floor(Date.now() / 1000),
+        totalIssued: 0,
+        activeIssued: 0,
+        revoked: 0
+      }, ...issuers];
+    } else {
+      updatedIssuers = issuers;
+    }
+    localStorage.setItem(STORAGE_KEYS.ISSUERS, JSON.stringify(updatedIssuers));
+  }
+
+  return updated;
+}
 
 export function getMockCredentials() {
   const cached = localStorage.getItem(STORAGE_KEYS.CREDENTIALS);

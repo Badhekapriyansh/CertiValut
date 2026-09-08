@@ -26,12 +26,22 @@ import {
   Copy,
   ExternalLink,
   Upload,
-  Award
+  Award,
+  QrCode
 } from 'lucide-react';
 import PrivacyBanner from './PrivacyBanner';
 
 export default function IssueWorkflowView() {
-  const { isDemoMode, refreshData, triggerConfetti, showToast, setActiveTab, setInspectCredential } = useApp();
+  const {
+    isDemoMode,
+    refreshData,
+    triggerConfetti,
+    showToast,
+    setActiveTab,
+    setInspectCredential,
+    organizations,
+    setQrModalData
+  } = useApp();
   const { account, signer, isCorrectNetwork, connectWallet } = useWallet();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -81,6 +91,8 @@ export default function IssueWorkflowView() {
 
     try {
       const issuedTimestamp = issueDate ? Math.floor(new Date(issueDate).getTime() / 1000) : Math.floor(Date.now() / 1000);
+      const matchedOrg = (organizations || []).find(o => o.name?.toLowerCase() === organization.toLowerCase());
+      const resolvedIssuerAddr = matchedOrg?.issuerAddress || account || '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC';
 
       if (isDemoMode) {
         // Fast instant simulator
@@ -97,7 +109,7 @@ export default function IssueWorkflowView() {
           studentId: recipientId,
           organization,
           institution: organization,
-          issuerAddress: account || '0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC',
+          issuerAddress: resolvedIssuerAddr,
           issuerName: organization,
           issuedAt: issuedTimestamp,
           issueDate,
@@ -557,9 +569,23 @@ export default function IssueWorkflowView() {
             <button
               onClick={() => setInspectCredential(issueResult)}
               className="btn btn-primary"
-              style={{ padding: '12px 24px' }}
+              style={{ padding: '12px 22px' }}
             >
-              <FileText size={16} /> View Official Attestation
+              <FileText size={16} /> View Attestation
+            </button>
+            <button
+              onClick={() => setQrModalData(issueResult)}
+              className="btn btn-secondary"
+              style={{ padding: '12px 20px' }}
+            >
+              <QrCode size={16} /> Share QR
+            </button>
+            <button
+              onClick={() => setActiveTab('passport')}
+              className="btn btn-secondary"
+              style={{ padding: '12px 20px' }}
+            >
+              <Award size={16} /> View in Passport
             </button>
             <button
               onClick={() => {
@@ -567,9 +593,9 @@ export default function IssueWorkflowView() {
                 setIssueResult(null);
               }}
               className="btn btn-secondary"
-              style={{ padding: '12px 20px' }}
+              style={{ padding: '12px 18px' }}
             >
-              <PlusCircle size={16} /> Issue Another Credential
+              <PlusCircle size={16} /> Issue Another
             </button>
           </div>
         </div>

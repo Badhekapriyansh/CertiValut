@@ -4,6 +4,7 @@ import {
   X,
   CheckCircle2,
   AlertTriangle,
+  XCircle,
   Building,
   Calendar,
   User,
@@ -14,17 +15,121 @@ import {
   Copy,
   FileCheck,
   ShieldCheck,
-  Cpu
+  Cpu,
+  FileText,
+  Award,
+  Clock,
+  Sparkles,
+  QrCode,
+  Building2
 } from 'lucide-react';
 import { NETWORK_CONFIG } from '../config/contracts';
 
 export default function CredentialDetailModal() {
-  const { inspectCredential, setInspectCredential, showToast } = useApp();
+  const { inspectCredential, setInspectCredential, showToast, openIssuerProfile, setQrModalData } = useApp();
   const [showTechnicalProof, setShowTechnicalProof] = useState(false);
 
   if (!inspectCredential) return null;
 
-  const isRevoked = inspectCredential.status === 2;
+  // Derive exact verification status
+  const code = inspectCredential.verificationStatusCode !== undefined
+    ? inspectCredential.verificationStatusCode
+    : (inspectCredential.status === 2 ? 5 : (inspectCredential.status === 1 ? 0 : 0));
+
+  const getVerificationState = (statusCode) => {
+    switch (statusCode) {
+      case 0:
+        return {
+          statusLabel: 'VERIFIED',
+          badgeText: 'VERIFIED ON-CHAIN',
+          badgeClass: 'badge-success',
+          color: 'var(--success)',
+          bg: 'rgba(0, 255, 135, 0.08)',
+          border: 'rgba(0, 255, 135, 0.3)',
+          icon: <CheckCircle2 size={24} color="var(--success)" />,
+          reason: null,
+          details: [
+            { label: 'Issuer Authority', value: 'Authorized & Accredited' },
+            { label: 'Document Match', value: 'Cryptographic Root Matched' },
+            { label: 'Credential Status', value: 'Active On-Chain' }
+          ]
+        };
+      case 4:
+        return {
+          statusLabel: 'NOT VERIFIED',
+          badgeText: 'ALTERATION DETECTED',
+          badgeClass: 'badge-danger',
+          color: 'var(--danger)',
+          bg: 'rgba(255, 71, 87, 0.08)',
+          border: 'rgba(255, 71, 87, 0.3)',
+          icon: <XCircle size={24} color="var(--danger)" />,
+          reason: 'Document Hash Mismatch',
+          explanation: 'The submitted document/data does not match the cryptographic fingerprint registered on Arbitrum Stylus for this credential.'
+        };
+      case 5:
+        return {
+          statusLabel: 'REVOKED',
+          badgeText: 'PERMANENTLY REVOKED',
+          badgeClass: 'badge-danger',
+          color: 'var(--danger)',
+          bg: 'rgba(255, 71, 87, 0.08)',
+          border: 'rgba(255, 71, 87, 0.3)',
+          icon: <AlertTriangle size={24} color="var(--danger)" />,
+          reason: 'Credential Revoked by Issuer',
+          explanation: 'This credential was previously issued but has been permanently revoked by the authorized issuing organization.'
+        };
+      case 1:
+        return {
+          statusLabel: 'NOT VERIFIED',
+          badgeText: 'RECORD NOT FOUND',
+          badgeClass: 'badge-danger',
+          color: 'var(--danger)',
+          bg: 'rgba(255, 71, 87, 0.08)',
+          border: 'rgba(255, 71, 87, 0.3)',
+          icon: <XCircle size={24} color="var(--danger)" />,
+          reason: 'Credential Not Found',
+          explanation: 'No matching record exists on the Arbitrum Stylus immutable ledger for this Credential ID.'
+        };
+      case 2:
+        return {
+          statusLabel: 'NOT VERIFIED',
+          badgeText: 'ISSUER NOT ACCREDITED',
+          badgeClass: 'badge-warning',
+          color: 'var(--warning)',
+          bg: 'rgba(245, 158, 11, 0.08)',
+          border: 'rgba(245, 158, 11, 0.3)',
+          icon: <AlertTriangle size={24} color="var(--warning)" />,
+          reason: 'Issuer Inactive / Not Accredited',
+          explanation: 'The issuing entity is not accredited in the protocol governance trust root.'
+        };
+      case 3:
+        return {
+          statusLabel: 'NOT VERIFIED',
+          badgeText: 'ISSUER SUSPENDED',
+          badgeClass: 'badge-warning',
+          color: 'var(--warning)',
+          bg: 'rgba(245, 158, 11, 0.08)',
+          border: 'rgba(245, 158, 11, 0.3)',
+          icon: <AlertTriangle size={24} color="var(--warning)" />,
+          reason: 'Issuer Inactive / Suspended',
+          explanation: 'The issuing organization currently has its verification privileges suspended.'
+        };
+      default:
+        return {
+          statusLabel: 'NOT VERIFIED',
+          badgeText: 'UNKNOWN STATUS',
+          badgeClass: 'badge-warning',
+          color: 'var(--warning)',
+          bg: 'rgba(255, 255, 255, 0.05)',
+          border: 'rgba(255, 255, 255, 0.1)',
+          icon: <AlertCircle size={24} color="var(--warning)" />,
+          reason: 'Unverified State',
+          explanation: 'The credential state could not be confirmed.'
+        };
+    }
+  };
+
+  const vState = getVerificationState(code);
 
   const handleCopy = (text, label) => {
     navigator.clipboard.writeText(text);
@@ -32,25 +137,26 @@ export default function CredentialDetailModal() {
   };
 
   return (
-    <div className="modal-backdrop" onClick={() => setInspectCredential(null)}>
+    <div className="modal-backdrop print-modal-backdrop" onClick={() => setInspectCredential(null)}>
       <div
-        className="glass-card"
+        className="glass-card printable-credential-document"
         onClick={(e) => e.stopPropagation()}
         style={{
           width: '100%',
-          maxWidth: 680,
-          maxHeight: '90vh',
+          maxWidth: 720,
+          maxHeight: '92vh',
           overflowY: 'auto',
-          padding: 32,
+          padding: 36,
           position: 'relative',
           background: '#0a0e17',
           border: '1px solid var(--border-medium)',
           boxShadow: 'var(--shadow-lg)'
         }}
       >
-        {/* Close Button */}
+        {/* Close Button (Hidden in Print) */}
         <button
           onClick={() => setInspectCredential(null)}
+          className="no-print"
           style={{
             position: 'absolute',
             top: 20,
@@ -64,77 +170,176 @@ export default function CredentialDetailModal() {
           <X size={20} />
         </button>
 
-        {/* Modal Header */}
+        {/* Certificate Header Banner */}
         <div style={{
           display: 'flex',
+          justifyContent: 'space-between',
           alignItems: 'center',
-          gap: 14,
           borderBottom: '1px solid var(--border-subtle)',
-          paddingBottom: 20,
+          paddingBottom: 16,
+          marginBottom: 20
+        }}>
+          <div>
+            <div style={{ fontSize: '0.72rem', fontFamily: 'var(--font-mono)', color: 'var(--primary)', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+              CERTIVAULT PROTOCOL
+            </div>
+            <h1 style={{ fontSize: '1.3rem', fontWeight: 900, fontFamily: 'var(--font-display)', color: '#ffffff', letterSpacing: '-0.3px', margin: '2px 0 0' }}>
+              VERIFIABLE CREDENTIAL ATTESTATION
+            </h1>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span className="tech-tag tech-tag-cyan" style={{ fontSize: '0.68rem' }}>
+              ARBITRUM STYLUS (WASM)
+            </span>
+          </div>
+        </div>
+
+        {/* Title & Organization Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 16,
           marginBottom: 20
         }}>
           <div style={{
-            width: 44,
-            height: 44,
-            borderRadius: '50%',
-            background: isRevoked ? 'var(--danger-bg)' : 'var(--success-bg)',
-            border: `1px solid ${isRevoked ? 'var(--danger-border)' : 'var(--success-border)'}`,
-            color: isRevoked ? 'var(--danger)' : 'var(--success)',
+            width: 48,
+            height: 48,
+            borderRadius: 12,
+            background: vState.bg,
+            border: `1px solid ${vState.border}`,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0
           }}>
-            {isRevoked ? <AlertTriangle size={22} /> : <CheckCircle2 size={22} />}
+            {vState.icon}
           </div>
 
-          <div>
+          <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <span className="badge badge-blue">
                 {inspectCredential.credentialType || 'Credential'}
               </span>
             </div>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#ffffff' }}>
-              {inspectCredential.title || inspectCredential.degree}
-            </div>
-            <div style={{ fontSize: '0.84rem', color: 'var(--text-sub)', display: 'flex', alignItems: 'center', gap: 6, marginTop: 4 }}>
-              <Building size={13} color="var(--primary)" />
-              <span>{inspectCredential.organization || inspectCredential.institution}</span>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#ffffff', lineHeight: 1.2 }}>
+              {inspectCredential.title || inspectCredential.degree || 'Verifiable Credential'}
+            </h2>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-sub)', display: 'flex', alignItems: 'center', gap: 10, marginTop: 6, flexWrap: 'wrap' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <Building size={14} color="var(--primary)" />
+                <span style={{ fontWeight: 600 }}>
+                  {inspectCredential.organization || inspectCredential.institution || inspectCredential.issuerAddress || 'Accredited Authority'}
+                </span>
+              </span>
+              <button
+                onClick={() => {
+                  setInspectCredential(null);
+                  openIssuerProfile(inspectCredential.issuerAddress || inspectCredential.issuer || '0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
+                }}
+                className="no-print"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--primary)',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  padding: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  textDecoration: 'underline'
+                }}
+              >
+                <Building2 size={11} /> View Issuer Trust Profile
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Status Badge */}
-        <div style={{ marginBottom: 20 }}>
-          <span className={`badge ${isRevoked ? 'badge-danger' : 'badge-success'}`}>
-            {isRevoked ? 'Permanently Revoked' : 'Active & Cryptographically Verified on Arbitrum Stylus'}
-          </span>
+        {/* Dynamic Verification Status Section */}
+        <div style={{
+          background: vState.bg,
+          border: `1px solid ${vState.border}`,
+          borderRadius: 10,
+          padding: '16px 20px',
+          marginBottom: 22
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10 }}>
+            <div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', marginBottom: 2 }}>
+                VERIFICATION STATUS
+              </div>
+              <div style={{ fontSize: '1.25rem', fontWeight: 900, fontFamily: 'var(--font-display)', color: vState.color, letterSpacing: '0.5px' }}>
+                STATUS: {vState.statusLabel}
+              </div>
+            </div>
+
+            <span className={`badge ${vState.badgeClass}`} style={{ fontSize: '0.78rem', padding: '6px 12px' }}>
+              {vState.badgeText}
+            </span>
+          </div>
+
+          {vState.reason && (
+            <div style={{ marginTop: 10, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+              <div style={{ fontSize: '0.82rem', fontWeight: 700, color: vState.color }}>
+                Reason: {vState.reason}
+              </div>
+              {vState.explanation && (
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-sub)', marginTop: 2 }}>
+                  {vState.explanation}
+                </div>
+              )}
+            </div>
+          )}
+
+          {vState.details && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10, marginTop: 12, borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 10 }}>
+              {vState.details.map((d, i) => (
+                <div key={i}>
+                  <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{d.label}</div>
+                  <div style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--text-main)' }}>{d.value}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* Core Metadata */}
+        {/* Core Credential Metadata Grid */}
         <div style={{
           background: 'rgba(0, 0, 0, 0.4)',
           border: '1px solid var(--border-subtle)',
-          borderRadius: 8,
-          padding: 18,
+          borderRadius: 10,
+          padding: 20,
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: 16,
-          marginBottom: 20
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gap: 18,
+          marginBottom: 22
         }}>
           <div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>RECIPIENT / HOLDER</div>
-            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>{inspectCredential.recipientName || inspectCredential.studentName}</div>
+            <div style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.98rem', marginTop: 2 }}>
+              {inspectCredential.recipientName || inspectCredential.studentName || 'Recipient'}
+            </div>
           </div>
 
           <div>
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>RECIPIENT / REFERENCE ID</div>
-            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.92rem' }}>{inspectCredential.recipientId || inspectCredential.studentId}</div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>RECIPIENT ID / REFERENCE</div>
+            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: '0.9rem', marginTop: 2, fontFamily: 'var(--font-mono)' }}>
+              {inspectCredential.recipientId || inspectCredential.studentId || 'N/A'}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>CREDENTIAL TYPE</div>
+            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: '0.9rem', marginTop: 2 }}>
+              {inspectCredential.credentialType || 'Verifiable Credential'}
+            </div>
           </div>
 
           <div>
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>ISSUE DATE</div>
-            <div style={{ color: 'var(--text-main)', fontSize: '0.88rem' }}>
+            <div style={{ color: 'var(--text-main)', fontSize: '0.88rem', marginTop: 2 }}>
               {inspectCredential.issueDate || (inspectCredential.issuedAt > 0
                 ? new Date(inspectCredential.issuedAt * 1000).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
                 : 'N/A')}
@@ -144,13 +349,101 @@ export default function CredentialDetailModal() {
           {(inspectCredential.description || inspectCredential.honors) && (
             <div style={{ gridColumn: '1 / -1' }}>
               <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>DESCRIPTION / DETAILS</div>
-              <div style={{ color: 'var(--text-main)', fontSize: '0.88rem' }}>{inspectCredential.description || inspectCredential.honors}</div>
+              <div style={{ color: 'var(--text-main)', fontSize: '0.86rem', marginTop: 2, lineHeight: 1.4 }}>
+                {inspectCredential.description || inspectCredential.honors}
+              </div>
             </div>
           )}
         </div>
 
-        {/* Technical Proof Dropdown */}
-        <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 14 }}>
+        {/* Cryptographic Identifiers */}
+        <div style={{
+          background: 'rgba(0, 0, 0, 0.6)',
+          border: '1px solid var(--border-subtle)',
+          borderRadius: 10,
+          padding: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          marginBottom: 20
+        }}>
+          <div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>
+              CREDENTIAL ID (KECCAK-256)
+            </div>
+            <div className="mono-block" style={{ fontSize: '0.76rem' }}>
+              {inspectCredential.id || inspectCredential.credId || 'N/A'}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>
+              DOCUMENT FINGERPRINT HASH (SHA-256)
+            </div>
+            <div className="mono-block" style={{ fontSize: '0.76rem' }}>
+              {inspectCredential.credentialHash || inspectCredential.credHash || 'N/A'}
+            </div>
+          </div>
+
+          {inspectCredential.holderCommitment && (
+            <div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>
+                HOLDER COMMITMENT (ZKP PRIVACY)
+              </div>
+              <div className="mono-block" style={{ fontSize: '0.76rem' }}>
+                {inspectCredential.holderCommitment}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* On-Chain Ledger Proof for Print (Always visible in Print) */}
+        <div className="print-only" style={{
+          borderTop: '1px solid #cbd5e1',
+          paddingTop: 14,
+          marginBottom: 16
+        }}>
+          <div style={{ fontSize: '0.75rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: '#0f172a', marginBottom: 8, textTransform: 'uppercase' }}>
+            ON-CHAIN LEDGER PROOF
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <div style={{ fontSize: '0.68rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>ISSUER WALLET ADDRESS</div>
+              <div className="mono-block" style={{ fontSize: '0.75rem' }}>
+                {inspectCredential.issuerAddress || inspectCredential.issuer || 'N/A'}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: '0.68rem', color: '#64748b', fontFamily: 'var(--font-mono)' }}>BLOCKCHAIN RUNTIME</div>
+              <div className="mono-block" style={{ fontSize: '0.75rem' }}>
+                Arbitrum Stylus Nitro (Chain ID: 421614 Sepolia)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Print Footer Stamp */}
+        <div className="print-only" style={{
+          borderTop: '2px solid #0f172a',
+          paddingTop: 12,
+          marginTop: 16,
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          fontSize: '0.75rem',
+          color: '#475569',
+          fontFamily: 'var(--font-mono)'
+        }}>
+          <div>
+            <strong>CERTIVAULT PROTOCOL</strong> • Verifiable Credential Record
+          </div>
+          <div>
+            Arbitrum Stylus / Arbitrum Sepolia
+          </div>
+        </div>
+
+        {/* Technical Proof Dropdown (Interactive on Screen) */}
+        <div className="no-print" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: 14 }}>
           <button
             onClick={() => setShowTechnicalProof(!showTechnicalProof)}
             style={{
@@ -168,7 +461,7 @@ export default function CredentialDetailModal() {
             }}
           >
             <Cpu size={14} />
-            <span>{showTechnicalProof ? 'Hide Cryptographic Proof' : 'View Cryptographic Proof'}</span>
+            <span>{showTechnicalProof ? 'Hide Cryptographic Proof' : 'View On-Chain Ledger Proof'}</span>
             {showTechnicalProof ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
           </button>
 
@@ -183,52 +476,37 @@ export default function CredentialDetailModal() {
               flexDirection: 'column',
               gap: 10
             }}>
-              <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>CREDENTIAL ID</div>
-                <div className="mono-block">{inspectCredential.id}</div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>DOCUMENT HASH (SHA-256)</div>
-                <div className="mono-block">{inspectCredential.credentialHash}</div>
-              </div>
-
-              <div>
-                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>HOLDER COMMITMENT (ZKP)</div>
-                <div className="mono-block">{inspectCredential.holderCommitment}</div>
-              </div>
-
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>ISSUER ADDRESS</div>
-                  <div className="mono-block">{inspectCredential.issuerAddress.slice(0, 10)}...</div>
+                  <div className="mono-block">{inspectCredential.issuerAddress || inspectCredential.issuer || '0x...'}</div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>TRANSACTION</div>
-                  <a
-                    href={`${NETWORK_CONFIG.blockExplorerUrl}/tx/${inspectCredential.txHash}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mono-block"
-                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none', color: 'var(--primary)' }}
-                  >
-                    <span>{inspectCredential.txHash.slice(0, 8)}...</span>
-                    <ExternalLink size={11} />
-                  </a>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>ARBITRUM STYLUS LEDGER</div>
+                  <div className="mono-block">Chain ID: 421614 (Sepolia)</div>
                 </div>
               </div>
             </div>
           )}
         </div>
 
-        {/* Modal Actions */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24 }}>
+        {/* Modal Actions (Hidden in Print) */}
+        <div className="no-print" style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 24, flexWrap: 'wrap' }}>
+          <button
+            onClick={() => {
+              setQrModalData(inspectCredential);
+            }}
+            className="btn btn-secondary"
+            style={{ padding: '8px 16px', fontSize: '0.84rem' }}
+          >
+            <QrCode size={14} /> Share / View QR
+          </button>
           <button
             onClick={() => window.print()}
             className="btn btn-secondary"
-            style={{ padding: '8px 14px', fontSize: '0.84rem' }}
+            style={{ padding: '8px 16px', fontSize: '0.84rem' }}
           >
-            <Printer size={14} /> Print Certificate
+            <Printer size={14} /> Print Credential
           </button>
           <button
             onClick={() => setInspectCredential(null)}
@@ -242,3 +520,4 @@ export default function CredentialDetailModal() {
     </div>
   );
 }
+

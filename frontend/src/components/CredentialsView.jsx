@@ -9,11 +9,12 @@ import {
   Ban,
   FileCheck,
   ChevronRight,
-  Filter
+  Filter,
+  QrCode
 } from 'lucide-react';
 
 export default function CredentialsView() {
-  const { credentials, setInspectCredential, setActiveTab, showToast } = useApp();
+  const { credentials, setInspectCredential, setActiveTab, showToast, setQrModalData } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
 
@@ -247,9 +248,29 @@ export default function CredentialsView() {
                     </span>
                   </td>
                   <td style={{ textAlign: 'right' }}>
-                    <button className="btn btn-secondary" style={{ padding: '4px 10px', fontSize: '0.74rem' }}>
-                      Inspect Proof
-                    </button>
+                    <div style={{ display: 'inline-flex', gap: 6 }}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setQrModalData(cred);
+                        }}
+                        className="btn btn-secondary"
+                        style={{ padding: '4px 8px', fontSize: '0.74rem' }}
+                        title="Share Verification QR"
+                      >
+                        <QrCode size={13} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setInspectCredential(cred);
+                        }}
+                        className="btn btn-secondary"
+                        style={{ padding: '4px 10px', fontSize: '0.74rem' }}
+                      >
+                        Inspect Proof
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

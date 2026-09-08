@@ -651,3 +651,111 @@ select.input-field {
     transform: translateY(0);
   }
 }
+
+/* Print Utilities */
+.print-only {
+  display: none !important;
+}
+
+@media print {
+  /* Hide default screen styling and reset canvas */
+  html, body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    font-size: 11pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  /* Completely hide all app-level elements, navigation, router, and background pages */
+  main,
+  #root > div > main,
+  #root > div > nav,
+  #root > div > header,
+  #root > div > footer,
+  nav,
+  header,
+  footer,
+  .no-print,
+  .navbar-wrapper,
+  .mode-banner,
+  .floating-stylus-pill,
+  .tech-tag-pill,
+  button,
+  .btn {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Unset modal overlay positioning so it sits normally in print stream */
+  .modal-backdrop,
+  .print-modal-backdrop {
+    position: static !important;
+    display: block !important;
+    visibility: visible !important;
+    background: transparent !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    min-height: auto !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Dedicated standalone printable credential document */
+  .printable-credential-document {
+    position: static !important;
+    display: block !important;
+    visibility: visible !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 2px solid #0f172a !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    box-shadow: none !important;
+    padding: 24px 30px !important;
+    border-radius: 6px !important;
+    margin: 0 auto !important;
+    page-break-inside: avoid !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Ensure high-contrast, crisp typography on paper/PDF */
+  .printable-credential-document h1,
+  .printable-credential-document h2,
+  .printable-credential-document h3 {
+    color: #0f172a !important;
+  }
+
+  .printable-credential-document div,
+  .printable-credential-document span,
+  .printable-credential-document p {
+    color: #334155 !important;
+    text-shadow: none !important;
+  }
+
+  .printable-credential-document .mono-block {
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    font-size: 8pt !important;
+    padding: 6px 10px !important;
+    word-break: break-all !important;
+  }
+
+  .printable-credential-document .badge,
+  .printable-credential-document .tech-tag {
+    border: 1px solid #94a3b8 !important;
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+  }
+}
