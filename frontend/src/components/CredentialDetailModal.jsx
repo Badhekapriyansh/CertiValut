@@ -476,7 +476,7 @@ export default function CredentialDetailModal() {
               flexDirection: 'column',
               gap: 10
             }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 10 }}>
                 <div>
                   <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>ISSUER ADDRESS</div>
                   <div className="mono-block">{inspectCredential.issuerAddress || inspectCredential.issuer || '0x...'}</div>

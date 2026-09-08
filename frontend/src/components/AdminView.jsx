@@ -205,7 +205,7 @@ export default function AdminView() {
         </div>
 
         {/* Binary Selectable Option Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginBottom: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 24 }}>
           {/* Option YES */}
           <div
             onClick={() => setHasWalletChoice('yes')}

@@ -230,7 +230,7 @@ export default function OrgRegisterView() {
       {step === 1 && (
         <div className="glass-card" style={{ padding: '32px 36px' }}>
           <form onSubmit={handleProceedToStep2}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 20 }}>
               <div className="input-group" style={{ gridColumn: '1 / -1' }}>
                 <label className="input-label">
                   <Building2 size={14} /> Organization / Institution Official Name *
@@ -394,7 +394,7 @@ export default function OrgRegisterView() {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 16, marginBottom: 28 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16, marginBottom: 28 }}>
             {/* Option A: Managed Issuer Identity */}
             <div
               onClick={() => setIdentityChoice('managed_identity')}

@@ -386,7 +386,7 @@ export default function PassportView() {
       {/* KPI Overview Pills */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: 16,
         marginBottom: 28
       }}>
@@ -525,7 +525,7 @@ export default function PassportView() {
           </button>
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
           {filteredCredentials.map((c) => {
             const isActive = c.status === 1;
             const isRevoked = c.status === 2;

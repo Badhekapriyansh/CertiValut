@@ -128,7 +128,7 @@ export default function HomeView() {
             </span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 12 }}>
             {samplePresets.map((preset, idx) => (
               <div
                 key={idx}
@@ -169,7 +169,7 @@ export default function HomeView() {
         {/* Live Protocol KPI Counter */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
           gap: 16,
           maxWidth: 1000,
           margin: '0 auto'
@@ -243,7 +243,7 @@ export default function HomeView() {
           </h2>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
           <div className="glass-card" style={{ padding: 28 }}>
             <div style={{ width: 44, height: 44, borderRadius: 12, background: 'rgba(0, 240, 255, 0.1)', border: '1px solid rgba(0, 240, 255, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
               <Cpu size={22} color="var(--primary)" />

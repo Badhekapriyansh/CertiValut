@@ -158,6 +158,10 @@ body {
   gap: 16px;
 }
 
+.nav-top-row {
+  display: contents;
+}
+
 /* Nav Logo */
 .nav-logo-group {
   display: flex;
@@ -577,10 +581,6 @@ select.input-field {
   transition: background 0.15s ease;
 }
 
-.data-table tr:hover td {
-  background: rgba(0, 240, 255, 0.02);
-}
-
 /* Modal Backdrop */
 .modal-backdrop {
   position: fixed;
@@ -651,6 +651,178 @@ select.input-field {
     transform: translateY(0);
   }
 }
+
+/* Responsive Media Queries & Mobile Enhancements */
+@media (max-width: 1024px) {
+  .navbar-inner {
+    gap: 12px;
+  }
+
+  .nav-capsule {
+    max-width: 600px;
+  }
+}
+
+@media (max-width: 860px) {
+  .navbar-wrapper {
+    padding: 8px 12px;
+  }
+
+  .navbar-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .nav-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .nav-capsule {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 12px;
+    padding: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nav-pill-btn {
+    padding: 6px 12px;
+    font-size: 0.74rem;
+  }
+
+  .mode-banner-container {
+    padding: 8px 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .mode-banner-left {
+    font-size: 0.72rem;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .mode-banner-btn {
+    width: 100%;
+    justify-content: center;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Main Container */
+  main {
+    padding: 16px 12px 48px !important;
+  }
+
+  /* Typography */
+  h1 {
+    font-size: 1.65rem !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  h2 {
+    font-size: 1.3rem !important;
+  }
+
+  /* Cards */
+  .glass-card,
+  .card {
+    padding: 18px 16px !important;
+    border-radius: 8px !important;
+  }
+
+  /* Modals */
+  .modal-backdrop {
+    padding: 12px !important;
+  }
+
+  .printable-credential-document {
+    padding: 20px 16px !important;
+    max-height: 94vh !important;
+  }
+
+  /* Tables */
+  .table-container {
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -4px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  /* Buttons */
+  .btn {
+    font-size: 0.82rem;
+    padding: 8px 14px;
+  }
+
+  /* Form Inputs */
+  .input-field,
+  .form-input {
+    padding: 10px 12px;
+    font-size: 0.84rem;
+  }
+
+  /* Monospace Block */
+  .mono-block {
+    font-size: 0.72rem;
+    padding: 8px 10px;
+  }
+
+  /* Floating Stylus Pill */
+  .floating-stylus-pill {
+    bottom: 12px;
+    right: 12px;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+  }
+
+  /* Hide subtitle text on tiny screens to save space */
+  .nav-logo-subtitle {
+    display: none;
+  }
+
+  .network-pill {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .wallet-pill {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-logo-title {
+    font-size: 1rem;
+  }
+
+  .nav-logo-badge {
+    width: 30px;
+    height: 30px;
+  }
+
+  .network-pill span:not(.cyan-dot) {
+    display: none;
+  }
+
+  .network-pill {
+    padding: 6px 8px;
+  }
+}
+
 
 /* Print Utilities */
 .print-only {

@@ -270,7 +270,7 @@ export default function IssueWorkflowView() {
             </h2>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             <div className="input-group">
               <label className="input-label"><Building size={14} /> Issuing Organization / Institution</label>
               <input
@@ -343,7 +343,7 @@ export default function IssueWorkflowView() {
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 16 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
             <div className="input-group">
               <label className="input-label"><Calendar size={14} /> Issue Date</label>
               <input
@@ -455,7 +455,7 @@ export default function IssueWorkflowView() {
             Confirm what is published to the public blockchain versus what remains 100% confidential.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 28 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20, marginBottom: 28 }}>
             {/* Left: Off-chain */}
             <div style={{ background: 'rgba(56, 189, 248, 0.04)', border: '1px solid rgba(56, 189, 248, 0.2)', borderRadius: 12, padding: 18 }}>
               <div style={{ color: '#38bdf8', fontWeight: 700, fontSize: '0.85rem', marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -554,7 +554,7 @@ export default function IssueWorkflowView() {
             <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4 }}>CREDENTIAL ID</div>
             <div className="mono-block" style={{ marginBottom: 12 }}>{issueResult.id}</div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 12 }}>
               <div>
                 <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: 4 }}>TRANSACTION</div>
                 <div className="mono-block">{issueResult.txHash.slice(0, 10)}...{issueResult.txHash.slice(-6)}</div>

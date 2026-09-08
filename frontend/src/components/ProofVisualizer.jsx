@@ -93,7 +93,7 @@ export default function ProofVisualizer({ activeStep = 4, compact = false }) {
       {/* Interactive Nodes Pipeline */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: 12,
         alignItems: 'stretch',
         position: 'relative',

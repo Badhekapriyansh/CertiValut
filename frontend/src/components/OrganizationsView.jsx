@@ -84,7 +84,7 @@ export default function OrganizationsView() {
       {/* KPI Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: 16,
         marginBottom: 28
       }}>
@@ -166,7 +166,7 @@ export default function OrganizationsView() {
       </div>
 
       {/* Organizations Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 20 }}>
         {filteredOrgs.map((org) => {
           const orgCreds = getOrgCredentials(org.issuerAddress);
           const activeCreds = orgCreds.filter(c => c.status === 1).length;

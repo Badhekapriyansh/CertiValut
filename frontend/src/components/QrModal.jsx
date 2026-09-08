@@ -49,7 +49,9 @@ export default function QrModal({ credential, onClose }) {
         style={{
           width: '100%',
           maxWidth: 480,
-          padding: 32,
+          maxHeight: '92vh',
+          overflowY: 'auto',
+          padding: 28,
           position: 'relative',
           background: '#090d16',
           border: '1px solid rgba(0, 240, 255, 0.3)',

@@ -249,7 +249,7 @@ export default function IssuerProfileView() {
       </div>
 
       {/* 2-Column Grid: Trust Verification Matrix + Stats & Details */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24, marginBottom: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24, marginBottom: 28 }}>
         {/* Trust Indicators Card */}
         <div className="glass-card" style={{ padding: 28 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>

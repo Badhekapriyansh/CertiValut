@@ -107,7 +107,7 @@ export default function CredentialsView() {
       {/* Summary KPI Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: 16,
         marginBottom: 28
       }}>
