@@ -37,6 +37,9 @@ export function AppProvider({ children }) {
   // Selected Issuer Address for Public Issuer Profile
   const [selectedIssuerAddress, setSelectedIssuerAddress] = useState('0x70997970C51812dc3A010C7d01b50e0d17dc79C8');
 
+  // Holder Authentication State (Protected Passport)
+  const [authenticatedHolder, setAuthenticatedHolder] = useState(null);
+
   // QR Modal Active Credential
   const [qrModalData, setQrModalData] = useState(null);
 
@@ -57,6 +60,39 @@ export function AppProvider({ children }) {
     setActivities(getMockActivities());
     setIssuers(getMockIssuers());
     setOrganizations(getMockOrganizations());
+  };
+
+  const authenticateHolder = (identifierOrProfile) => {
+    if (!identifierOrProfile) return null;
+    let profile = null;
+    if (typeof identifierOrProfile === 'string') {
+      const trimmed = identifierOrProfile.trim();
+      const matchedCred = credentials.find(
+        (c) =>
+          (c.recipientId && c.recipientId.toLowerCase() === trimmed.toLowerCase()) ||
+          (c.studentId && c.studentId.toLowerCase() === trimmed.toLowerCase()) ||
+          (c.recipientName && c.recipientName.toLowerCase() === trimmed.toLowerCase()) ||
+          (c.studentName && c.studentName.toLowerCase() === trimmed.toLowerCase()) ||
+          (c.recipientAddress && c.recipientAddress.toLowerCase() === trimmed.toLowerCase())
+      );
+
+      profile = {
+        id: matchedCred?.recipientId || matchedCred?.studentId || trimmed,
+        name: matchedCred?.recipientName || matchedCred?.studentName || trimmed,
+        identifier: trimmed,
+        address: matchedCred?.recipientAddress || (trimmed.startsWith('0x') ? trimmed : null),
+        authMethod: trimmed.startsWith('0x') ? 'wallet' : 'holder_id',
+      };
+    } else if (typeof identifierOrProfile === 'object') {
+      profile = identifierOrProfile;
+    }
+
+    setAuthenticatedHolder(profile);
+    return profile;
+  };
+
+  const logoutHolder = () => {
+    setAuthenticatedHolder(null);
   };
 
   // Parse URL Deep Links (e.g. ?id=0x... or ?tab=verify&id=0x... or ?tab=issuer-profile&address=0x...)
@@ -155,6 +191,10 @@ export function AppProvider({ children }) {
         setSelectedOrg,
         selectedIssuerAddress,
         setSelectedIssuerAddress,
+        authenticatedHolder,
+        setAuthenticatedHolder,
+        authenticateHolder,
+        logoutHolder,
         openIssuerProfile,
         qrModalData,
         setQrModalData,

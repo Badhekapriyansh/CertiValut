@@ -40,7 +40,8 @@ export default function IssueWorkflowView() {
     setActiveTab,
     setInspectCredential,
     organizations,
-    setQrModalData
+    setQrModalData,
+    authenticateHolder
   } = useApp();
   const { account, signer, isCorrectNetwork, connectWallet } = useWallet();
 
@@ -581,7 +582,15 @@ export default function IssueWorkflowView() {
               <QrCode size={16} /> Share QR
             </button>
             <button
-              onClick={() => setActiveTab('passport')}
+              onClick={() => {
+                authenticateHolder({
+                  id: issueResult.recipientId || issueResult.studentId,
+                  name: issueResult.recipientName || issueResult.studentName,
+                  identifier: issueResult.recipientId || issueResult.studentId,
+                  authMethod: 'holder_id'
+                });
+                setActiveTab('passport');
+              }}
               className="btn btn-secondary"
               style={{ padding: '12px 20px' }}
             >

@@ -78,15 +78,15 @@ export default function QrModal({ credential, onClose }) {
         {/* Header */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
           <span className="tech-tag tech-tag-cyan" style={{ fontSize: '0.68rem' }}>
-            <ShieldCheck size={11} /> CERTIVAULT VERIFICATION QR
+            <ShieldCheck size={11} /> SELECTIVE CREDENTIAL SHARING
           </span>
         </div>
 
         <h2 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#ffffff', fontFamily: 'var(--font-display)', marginBottom: 6 }}>
-          Scan to Verify Credential
+          Share This Credential
         </h2>
         <p style={{ color: 'var(--text-sub)', fontSize: '0.84rem', maxWidth: 360, margin: '0 auto 20px' }}>
-          Anyone can scan this QR code with a smartphone camera to immediately verify this credential on Arbitrum Stylus.
+          Anyone can scan this QR code to independently verify this specific credential on Arbitrum Stylus without gaining access to your passport.
         </p>
 
         {/* High-Contrast QR Code Card */}
