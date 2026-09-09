@@ -158,10 +158,6 @@ body {
   gap: 16px;
 }
 
-.nav-top-row {
-  display: contents;
-}
-
 /* Nav Logo */
 .nav-logo-group {
   display: flex;
@@ -669,19 +665,21 @@ select.input-field {
   }
 
   .navbar-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
   }
 
-  .nav-top-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
+  .nav-logo-group {
+    order: 1;
+  }
+
+  .nav-right-group {
+    order: 2;
   }
 
   .nav-capsule {
+    order: 3;
     max-width: 100%;
     width: 100%;
     border-radius: 12px;
